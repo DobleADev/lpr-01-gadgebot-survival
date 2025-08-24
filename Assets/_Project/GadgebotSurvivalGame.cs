@@ -7,26 +7,51 @@ public class GadgebotSurvivalGame : MonoBehaviour
 	public GadgebotSpawner spawner;
 	public GadgebotGoal goal;
 	public GameObject winPopup; 
+	public bool startGameOnStart;
+	public float startSpawnInterval = 2;
+	public float spawnInterval = 3;
 
 	void Awake ()
 	{
 		goal.onCountUpdated.AddListener(CheckWin);
 	}
 
-	public void StartGame()
+	void OnDestroy ()
 	{
-		
+		goal.onCountUpdated.RemoveListener(CheckWin);
+	}
+
+    void Start()
+    {
+        if (startGameOnStart) StartGame();
+    }
+
+	IEnumerator SpawnLoop()
+	{
+		bool firstSpawned = false;
+		float internalSpawnInterval = startSpawnInterval;
+		while (true)
+		{
+			yield return new WaitForSeconds(internalSpawnInterval);
+			spawner.Spawn();
+			if (!firstSpawned)
+			{
+				internalSpawnInterval = spawnInterval;
+				firstSpawned = true;
+			}
+		}
+	}
+
+    public void StartGame()
+	{
+		StartCoroutine(SpawnLoop());
 	}
 
 	public void CheckWin(int count)
 	{
 		if (count != 0) return;
-
 		winPopup.SetActive(true);
 	}
 
-	void OnDestroy ()
-	{
-		goal.onCountUpdated.RemoveListener(CheckWin);
-	}
+	
 }
