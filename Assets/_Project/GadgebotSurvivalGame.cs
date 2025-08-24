@@ -1,33 +1,51 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
-public class GadgebotSurvivalGame : MonoBehaviour 
+public class GadgebotSurvivalGame : MonoBehaviour
 {
 	public GadgebotSpawner spawner;
 	public GadgebotGoal goal;
 	public NavigationManager navManager;
-	public GameObject winPopup; 
+	public UnityEvent onWin;
+	public UnityEvent onLose;
 	public bool startGameOnStart;
+	public bool gameRunning;
 	public float startSpawnInterval = 2;
 	public float spawnInterval = 3;
 
 	void Awake()
 	{
 		goal.onCountUpdated.AddListener(CheckWin);
-		spawner.onSpawn.AddListener(navManager.AddSelectable);
+		goal.onCountUpdated.AddListener((count) => CheckLose());
+		spawner.onSpawn.AddListener(OnGadgebotSpawned);
 	}
 
 	void OnDestroy()
 	{
 		goal.onCountUpdated.RemoveListener(CheckWin);
-		spawner.onSpawn.RemoveListener(navManager.AddSelectable);
+		goal.onCountUpdated.RemoveListener((count) => CheckLose());
+		spawner.onSpawn.RemoveListener(OnGadgebotSpawned);
 	}
 
-    void Start()
-    {
-        if (startGameOnStart) StartGame();
-    }
+	void OnGadgebotSpawned(Gadgebot gadgebot)
+	{
+		gadgebot.onDestroy.AddListener(OnGadgebotDestroy);
+		navManager.AddSelectable(gadgebot);
+	}
+
+	void OnGadgebotDestroy(Gadgebot gadgebot)
+	{
+		gadgebot.onDestroy.RemoveListener(OnGadgebotDestroy);
+		navManager.RemoveSelectable(gadgebot);
+		CheckLose();
+	}
+
+	void Start()
+	{
+		if (startGameOnStart) StartGame();
+	}
 
 	IEnumerator SpawnLoop()
 	{
@@ -45,16 +63,25 @@ public class GadgebotSurvivalGame : MonoBehaviour
 		}
 	}
 
-    public void StartGame()
+	public void StartGame()
 	{
+		if (gameRunning) return;
+		gameRunning = true;
 		StartCoroutine(SpawnLoop());
 	}
 
-	public void CheckWin(int count)
+	void CheckWin(int count)
 	{
-		if (count != 0) return;
-		winPopup.SetActive(true);
+		if (!gameRunning || count != 0) return;
+		gameRunning = false;
+		onWin?.Invoke();
 	}
 
+	void CheckLose()
+	{
+		if (!gameRunning || navManager.selectables.Count != 0) return;
+		gameRunning = false;
+		onLose?.Invoke();
+	}
 	
 }

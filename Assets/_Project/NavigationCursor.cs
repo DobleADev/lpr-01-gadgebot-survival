@@ -19,6 +19,8 @@ public class NavigationCursor : MonoBehaviour
     }
     public Color normalColor = Color.gray;
     public Color selectingColor = Color.green;
+    public float normalDepth = 0;
+    public float selectedOffsetDepth = 0;
     public float outlineColorFactor = 0.5f; // Factor para oscurecer el color del outline
     public TMP_Text label;
     private MaterialPropertyBlock _mpb;
@@ -26,14 +28,23 @@ public class NavigationCursor : MonoBehaviour
     void LateUpdate()
     {
         // Vector2 translation = sensibility * new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
+
         if (selectableSelected != null)
         {
-            transform.position = selectableSelected.transform.position;
+            Vector3 selectedPosition = selectableSelected.gadgebot.transform.position;
+            selectedPosition.z += selectedOffsetDepth;
+            transform.position = selectedPosition;
+            // transform.position = selectableSelected.transform.position;
         }
         else
         {
             // transform.position += (Vector3)translation;
-            transform.position = Input.mousePosition;
+            // transform.position = Input.mousePosition;
+            Vector3 mouseScreenPosition = Input.mousePosition;
+            mouseScreenPosition.z = -Camera.main.transform.position.z;
+            Vector3 cursorPosition = Camera.main.ScreenToWorldPoint(mouseScreenPosition);
+            cursorPosition.z = normalDepth;
+            transform.position = cursorPosition;
         }
     }
 

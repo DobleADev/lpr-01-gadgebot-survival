@@ -5,10 +5,11 @@ using System.Linq;
 
 public class NavigationManager : MonoBehaviour
 {
-    public NavigationSelectable prefab;
-    public List<NavigationSelectable> selectables = new List<NavigationSelectable>();
-    public NavigationSelectable currentSelectable;
     public NavigationCursor reticle;
+    public RadialMenu commandMenu;
+    public NavigationSelectable prefab;
+    public NavigationSelectable currentSelectable;
+    public List<NavigationSelectable> selectables = new List<NavigationSelectable>();
 
     void Start()
     {
@@ -19,11 +20,9 @@ public class NavigationManager : MonoBehaviour
     public void AddSelectable(Gadgebot gadgebot)
     {
         var newSelectable = Instantiate(prefab, transform);
-        gadgebot.onDestroy.AddListener(RemoveSelectable);
+        // gadgebot.onDestroy.AddListener(RemoveSelectable);
         newSelectable.onSelected.AddListener(() => UpdateCurrentSelectable(newSelectable));
-        newSelectable.onSelected.AddListener(() => reticle.selectableSelected = newSelectable);
         newSelectable.onExited.AddListener(() => UpdateCurrentSelectable(null));
-        newSelectable.onExited.AddListener(() => reticle.selectableSelected = null);
         newSelectable.gadgebot = gadgebot;
         newSelectable.KeepInGadgebot();
         selectables.Add(newSelectable);
@@ -32,19 +31,17 @@ public class NavigationManager : MonoBehaviour
 
     public void RemoveSelectable(Gadgebot gadgebot)
     {
-        gadgebot.onDestroy.RemoveListener(RemoveSelectable);
+        // gadgebot.onDestroy.RemoveListener(RemoveSelectable);
         var selectableToRemove = selectables.Where(s => s.gadgebot == gadgebot).FirstOrDefault();
         selectableToRemove.onSelected.RemoveListener(() => UpdateCurrentSelectable(selectableToRemove));
-        selectableToRemove.onSelected.RemoveListener(() => reticle.selectableSelected = selectableToRemove);
         selectableToRemove.onExited.RemoveListener(() => UpdateCurrentSelectable(null));
-        selectableToRemove.onExited.RemoveListener(() => reticle.selectableSelected = null);
         selectables.Remove(selectableToRemove);
         Destroy(selectableToRemove.gameObject);
     }
 
     public void UpdateCurrentSelectable(NavigationSelectable selectable)
     {
-        currentSelectable = selectable;
+        currentSelectable = reticle.selectableSelected = selectable;
     }
 
     void Update()
