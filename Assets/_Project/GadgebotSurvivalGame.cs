@@ -6,19 +6,22 @@ public class GadgebotSurvivalGame : MonoBehaviour
 {
 	public GadgebotSpawner spawner;
 	public GadgebotGoal goal;
+	public NavigationManager navManager;
 	public GameObject winPopup; 
 	public bool startGameOnStart;
 	public float startSpawnInterval = 2;
 	public float spawnInterval = 3;
 
-	void Awake ()
+	void Awake()
 	{
 		goal.onCountUpdated.AddListener(CheckWin);
+		spawner.onSpawn.AddListener(navManager.AddSelectable);
 	}
 
-	void OnDestroy ()
+	void OnDestroy()
 	{
 		goal.onCountUpdated.RemoveListener(CheckWin);
+		spawner.onSpawn.RemoveListener(navManager.AddSelectable);
 	}
 
     void Start()

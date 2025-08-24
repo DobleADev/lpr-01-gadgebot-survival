@@ -27,7 +27,8 @@ public class GadgebotSpawner : MonoBehaviour
 	public void Spawn()
 	{
 		if (count <= 0) return;
-		Instantiate(prefab, transform.position, Quaternion.identity);
+		var newGadgebot = Instantiate(prefab, transform.position, Quaternion.identity);
+		onSpawn?.Invoke(newGadgebot);
 		count--;
 	}
 
