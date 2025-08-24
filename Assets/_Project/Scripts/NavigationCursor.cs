@@ -19,7 +19,7 @@ public class NavigationCursor : MonoBehaviour
     }
     public Color normalColor = Color.gray;
     public Color selectingColor = Color.green;
-    public float normalDepth = 0;
+    public float normalOffsetDepth = 0;
     public float selectedOffsetDepth = 0;
     public float outlineColorFactor = 0.5f; // Factor para oscurecer el color del outline
     public TMP_Text label;
@@ -31,9 +31,9 @@ public class NavigationCursor : MonoBehaviour
 
         if (selectableSelected != null)
         {
-            Vector3 selectedPosition = selectableSelected.gadgebot.transform.position;
-            selectedPosition.z += selectedOffsetDepth;
-            transform.position = selectedPosition;
+            Vector3 selectedPosition = selectableSelected.transform.position;
+            selectedPosition.z = selectableSelected.gadgebot.transform.position.z - Camera.main.transform.position.z + selectedOffsetDepth;
+            transform.position = Camera.main.ScreenToWorldPoint(selectedPosition);
             // transform.position = selectableSelected.transform.position;
         }
         else
@@ -41,10 +41,8 @@ public class NavigationCursor : MonoBehaviour
             // transform.position += (Vector3)translation;
             // transform.position = Input.mousePosition;
             Vector3 mouseScreenPosition = Input.mousePosition;
-            mouseScreenPosition.z = -Camera.main.transform.position.z;
-            Vector3 cursorPosition = Camera.main.ScreenToWorldPoint(mouseScreenPosition);
-            cursorPosition.z = normalDepth;
-            transform.position = cursorPosition;
+            mouseScreenPosition.z = -Camera.main.transform.position.z + normalOffsetDepth;
+            transform.position = Camera.main.ScreenToWorldPoint(mouseScreenPosition);
         }
     }
 

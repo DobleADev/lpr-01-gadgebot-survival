@@ -8,12 +8,12 @@ public class GadgebotSurvivalGame : MonoBehaviour
 	public GadgebotSpawner spawner;
 	public GadgebotGoal goal;
 	public NavigationManager navManager;
-	public UnityEvent onWin;
-	public UnityEvent onLose;
 	public bool startGameOnStart;
 	public bool gameRunning;
 	public float startSpawnInterval = 2;
 	public float spawnInterval = 3;
+	public UnityEvent onWin;
+	public UnityEvent onLose;
 
 	void Awake()
 	{

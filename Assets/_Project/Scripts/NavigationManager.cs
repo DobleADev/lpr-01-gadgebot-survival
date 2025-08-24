@@ -11,6 +11,16 @@ public class NavigationManager : MonoBehaviour
     public NavigationSelectable currentSelectable;
     public List<NavigationSelectable> selectables = new List<NavigationSelectable>();
 
+    void Awake()
+    {
+        commandMenu.onSelect.AddListener(RequestCommandToCurrentSelectable);
+    }
+
+    void OnDestroy()
+    {
+        commandMenu.onSelect.RemoveListener(RequestCommandToCurrentSelectable);
+    }
+
     void Start()
     {
         Cursor.visible = false;
@@ -36,10 +46,17 @@ public class NavigationManager : MonoBehaviour
         selectableToRemove.onSelected.RemoveListener(() => UpdateCurrentSelectable(selectableToRemove));
         selectableToRemove.onExited.RemoveListener(() => UpdateCurrentSelectable(null));
         selectables.Remove(selectableToRemove);
-        Destroy(selectableToRemove.gameObject);
+        if (selectableToRemove != null) Destroy(selectableToRemove.gameObject);
     }
 
-    public void UpdateCurrentSelectable(NavigationSelectable selectable)
+    void RequestCommandToCurrentSelectable(GadgebotCommandOption gadgebotCommand)
+    {
+        if (currentSelectable == null) return;
+
+        currentSelectable.gadgebot.RequestCommandChange(gadgebotCommand);
+    }
+
+    void UpdateCurrentSelectable(NavigationSelectable selectable)
     {
         currentSelectable = reticle.selectableSelected = selectable;
     }

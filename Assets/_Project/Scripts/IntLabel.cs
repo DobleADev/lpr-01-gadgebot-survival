@@ -11,6 +11,7 @@ public class IntLabel : MonoBehaviour
     public Color zeroColor = Color.gray;
     public float outlineColorFactor = 0.5f; // Factor para oscurecer el color del outline
     public TMP_Text label;
+    private int lastSetValue;
 
     // Se recomienda usar un MaterialPropertyBlock para evitar crear nuevas instancias de material
     private MaterialPropertyBlock _mpb;
@@ -69,5 +70,11 @@ public class IntLabel : MonoBehaviour
             // Aplica el bloque de propiedades al renderizador
             renderer.SetPropertyBlock(_mpb);
         }
+        lastSetValue = value;
+    }
+
+    void OnValidate()
+    {
+        UpdateColor(lastSetValue);
     }
 }

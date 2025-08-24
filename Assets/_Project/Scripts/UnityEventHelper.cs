@@ -9,6 +9,8 @@ public class GameObjectUnityEvent : UnityEvent<GameObject> { }
 
 [Serializable]
 public class GadgebotUnityEvent : UnityEvent<Gadgebot> { }
+[Serializable]
+public class GadgebotCommandOptionUnityEvent : UnityEvent<GadgebotCommandOption> { }
 
 [Serializable]
 public class IntUnityEvent : UnityEvent<int> { }
