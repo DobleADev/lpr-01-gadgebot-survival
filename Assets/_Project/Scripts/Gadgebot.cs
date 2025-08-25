@@ -37,7 +37,7 @@ public class Gadgebot : MonoBehaviour
 	void FixedUpdate()
 	{
 		RaycastHit2D[] groundHit = new RaycastHit2D[1];
-		isGrounded = Physics2D.BoxCastNonAlloc(physics.position + new Vector2(0, -0.5f), new Vector2(0.7f, 0.1f), 0, Vector2.down, groundHit, 0.01f) > 0;
+		isGrounded = Physics2D.BoxCastNonAlloc(physics.position + new Vector2(0, -0.5f), new Vector2(0.8f, 0.1f), 0, Vector2.down, groundHit, 0.01f) > 0;
 		Vector2 movement = Vector2.zero;
 
 		if (isGrounded)

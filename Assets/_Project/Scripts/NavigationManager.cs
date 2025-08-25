@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using System.Linq;
 
 public class NavigationManager : MonoBehaviour
@@ -8,23 +9,32 @@ public class NavigationManager : MonoBehaviour
     public NavigationCursor reticle;
     public RadialMenu commandMenu;
     public NavigationSelectable prefab;
+    public NavigationSelectable defaultSelectable;
     public NavigationSelectable currentSelectable;
+    public float distanceToDeselect = 1;
+    public float onDeselectCursortOffset = 1f;
     public List<NavigationSelectable> selectables = new List<NavigationSelectable>();
+    public NavigationSelectable GetSelectableByGadgebot(Gadgebot gadgebot) => selectables.Where(s => s.gadgebot == gadgebot).FirstOrDefault();
 
     void Awake()
     {
         commandMenu.onSelect.AddListener(RequestCommandToCurrentSelectable);
+        commandMenu.onMenuOpen.AddListener(OnCommandMenuOpen);
+        commandMenu.onMenuClose.AddListener(OnCommandMenuClose);
     }
 
     void OnDestroy()
     {
         commandMenu.onSelect.RemoveListener(RequestCommandToCurrentSelectable);
+        commandMenu.onMenuOpen.RemoveListener(OnCommandMenuOpen);
+        commandMenu.onMenuClose.RemoveListener(OnCommandMenuClose);
     }
 
     void Start()
     {
         Cursor.visible = false;
-        // Cursor.lockState = CursorLockMode.Locked; 
+        Cursor.lockState = CursorLockMode.Locked;
+        // EventSystem.current.sendNavigationEvents = false;
     }
 
     public void AddSelectable(Gadgebot gadgebot)
@@ -32,7 +42,7 @@ public class NavigationManager : MonoBehaviour
         var newSelectable = Instantiate(prefab, transform);
         // gadgebot.onDestroy.AddListener(RemoveSelectable);
         newSelectable.onSelected.AddListener(() => UpdateCurrentSelectable(newSelectable));
-        newSelectable.onExited.AddListener(() => UpdateCurrentSelectable(null));
+        // newSelectable.onExited.AddListener(() => UpdateCurrentSelectable(null));
         newSelectable.gadgebot = gadgebot;
         newSelectable.KeepInGadgebot();
         selectables.Add(newSelectable);
@@ -42,31 +52,82 @@ public class NavigationManager : MonoBehaviour
     public void RemoveSelectable(Gadgebot gadgebot)
     {
         // gadgebot.onDestroy.RemoveListener(RemoveSelectable);
-        var selectableToRemove = selectables.Where(s => s.gadgebot == gadgebot).FirstOrDefault();
+        var selectableToRemove = GetSelectableByGadgebot(gadgebot);
         selectableToRemove.onSelected.RemoveListener(() => UpdateCurrentSelectable(selectableToRemove));
-        selectableToRemove.onExited.RemoveListener(() => UpdateCurrentSelectable(null));
+        // selectableToRemove.onExited.RemoveListener(() => UpdateCurrentSelectable(null));
         selectables.Remove(selectableToRemove);
         if (selectableToRemove != null) Destroy(selectableToRemove.gameObject);
     }
 
     void RequestCommandToCurrentSelectable(GadgebotCommandOption gadgebotCommand)
     {
-        if (currentSelectable == null) return;
+        if (currentSelectable == null || currentSelectable.gadgebot == null) return;
 
         currentSelectable.gadgebot.RequestCommandChange(gadgebotCommand);
     }
 
     void UpdateCurrentSelectable(NavigationSelectable selectable)
     {
+        if (commandMenu.isOpened) return;
+        if (selectable == null)
+        {
+            currentSelectable = defaultSelectable;
+            SetEventSystemSelectable(defaultSelectable);
+            defaultSelectable.gameObject.SetActive(true);
+            reticle.selectableSelected = null;
+            // Debug.Log("Trying...");
+            return;
+        }
         currentSelectable = reticle.selectableSelected = selectable;
+        SetEventSystemSelectable(currentSelectable);
+        defaultSelectable.gameObject.SetActive(false);
+        // Debug.Log("SELECTED!");
     }
 
-    void Update()
+    void SetEventSystemSelectable(NavigationSelectable selectable)
+    {
+        if (EventSystem.current.currentSelectedGameObject == selectable.gameObject) return;
+        EventSystem.current.SetSelectedGameObject(selectable.gameObject);
+    }
+
+    void OnCommandMenuOpen()
+    {
+        reticle.timeScale = 0;
+
+    }
+
+    void OnCommandMenuClose()
+    {
+        reticle.timeScale = 1;
+        SetEventSystemSelectable(currentSelectable);
+    }
+
+    void LateUpdate()
     {
         foreach (var selectable in selectables)
         {
             selectable.KeepInGadgebot();
         }
 
+        reticle.UpdatePosition();
+        defaultSelectable.transform.position = reticle.GetScreenPosition();
+
+        if (reticle.selectableSelected == null)
+        {
+            UpdateCurrentSelectable(GetSelectableByGadgebot(reticle.DoGadgebotRaycast()));
+        }
+        else
+        {
+            if (reticle.cursorVectorOnSelected.magnitude > distanceToDeselect)
+            {
+                // Vector3 cursorOffset = Camera.main.ScreenToWorldPoint(reticle.cursorVectorOnSelected);
+                Vector3 direction = reticle.cursorVectorOnSelected.normalized;
+                
+                // defaultSelectable.transform.position = currentSelectable.transform.position + (onDeselectCursortOffset * direction);
+                reticle.position += (onDeselectCursortOffset * direction);
+                UpdateCurrentSelectable(null);
+            }
+        }
     }
+    
 }

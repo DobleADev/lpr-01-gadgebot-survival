@@ -6,6 +6,7 @@ using TMPro;
 // [ExecuteInEditMode]
 public class NavigationCursor : MonoBehaviour
 {
+    public float pixelSizeRef = 20;
     public float sensibility = 10;
     NavigationSelectable _selectableSelected;
     public NavigationSelectable selectableSelected
@@ -21,28 +22,64 @@ public class NavigationCursor : MonoBehaviour
     public Color selectingColor = Color.green;
     public float normalOffsetDepth = 0;
     public float selectedOffsetDepth = 0;
+    public float normalVisualScale = 1.5f;
+    public float selectedVisualScale = 0.9f;
     public float outlineColorFactor = 0.5f; // Factor para oscurecer el color del outline
     public TMP_Text label;
     private MaterialPropertyBlock _mpb;
-
-    void LateUpdate()
+    Vector3 cursorPosition;
+    public float timeScale = 1;
+    public Camera gameCamera;
+    public LayerMask gadgebotLayer = 0;
+    public Vector2 cursorVectorOnSelected;
+    public Vector3 position
     {
-        // Vector2 translation = sensibility * new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
+        get
+        {
+            return transform.position;
+        }
+        set
+        {
+            cursorPosition = gameCamera.WorldToScreenPoint(value);
+            transform.position = value;
+        }
+    }
+
+    void Awake()
+    {
+        gameCamera = Camera.main;
+        cursorPosition.x = Screen.width * 0.5f;
+        cursorPosition.y = Screen.height * 0.5f;
+    }
+
+    // void LateUpdate()
+    public void UpdatePosition()
+    {
+        Vector2 translation = sensibility * new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
 
         if (selectableSelected != null)
         {
             Vector3 selectedPosition = selectableSelected.transform.position;
-            selectedPosition.z = selectableSelected.gadgebot.transform.position.z - Camera.main.transform.position.z + selectedOffsetDepth;
-            transform.position = Camera.main.ScreenToWorldPoint(selectedPosition);
+            cursorPosition = selectedPosition;
+            selectedPosition.z = selectableSelected.gadgebot.transform.position.z - gameCamera.transform.position.z + selectedOffsetDepth;
+            transform.position = gameCamera.ScreenToWorldPoint(selectedPosition);
+            cursorVectorOnSelected += timeScale * translation;
+            label.transform.localScale = selectedVisualScale * Vector3.one;
             // transform.position = selectableSelected.transform.position;
         }
         else
         {
             // transform.position += (Vector3)translation;
             // transform.position = Input.mousePosition;
-            Vector3 mouseScreenPosition = Input.mousePosition;
-            mouseScreenPosition.z = -Camera.main.transform.position.z + normalOffsetDepth;
-            transform.position = Camera.main.ScreenToWorldPoint(mouseScreenPosition);
+            // cursorPosition = Input.mousePosition;
+            cursorPosition += timeScale * (Vector3)translation;
+            cursorPosition.x = Mathf.Clamp(cursorPosition.x, pixelSizeRef, Screen.width - pixelSizeRef);
+            cursorPosition.y = Mathf.Clamp(cursorPosition.y, pixelSizeRef, Screen.height - pixelSizeRef);
+            cursorPosition.z = -gameCamera.transform.position.z + normalOffsetDepth;
+
+            transform.position = gameCamera.ScreenToWorldPoint(cursorPosition);
+            label.transform.localScale = normalVisualScale * Vector3.one;
+            cursorVectorOnSelected = Vector2.zero;
         }
     }
 
@@ -92,5 +129,27 @@ public class NavigationCursor : MonoBehaviour
     void OnValidate()
     {
         UpdateColor(selectableSelected);
+    }
+
+    public Vector3 GetScreenPosition()
+    {
+        return gameCamera.WorldToScreenPoint(transform.position);
+    }
+
+    public Gadgebot DoGadgebotRaycast()
+    {
+        Color rayColor = Color.gray;
+        Vector2 origin = transform.position;
+        Collider2D collider = Physics2D.OverlapPoint(origin, gadgebotLayer);
+        if (collider == null)
+        {
+            // Debug.DrawRay(origin, Vector3.forward * 100f, rayColor);
+            return null;
+        }
+        rayColor = Color.red;
+        Gadgebot gadgebot = collider.GetComponent<Gadgebot>();
+        if (gadgebot != null) rayColor = Color.green;
+        // Debug.DrawRay(origin, Vector3.forward * 100f, rayColor);
+        return gadgebot;
     }
 }

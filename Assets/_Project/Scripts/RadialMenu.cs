@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
+// using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Events;
 
 public class RadialMenu : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class RadialMenu : MonoBehaviour
     public GadgebotCommandOption[] options;
     public RadialMenuItem[] uiOptions;
     public GadgebotCommandOptionUnityEvent onSelect;
+    public UnityEvent onMenuOpen;
+    public UnityEvent onMenuClose;
     Vector2 selectionVector;
     RadialMenuItem itemSelected;
     float selectionTime = 0;
@@ -43,7 +46,6 @@ public class RadialMenu : MonoBehaviour
 
             if (!commandMenuInputHolded) Close();
         }
-        if (selectionTime > 0) selectionTime -= Time.deltaTime;
     }
 
     void Open()
@@ -52,7 +54,9 @@ public class RadialMenu : MonoBehaviour
         canvasGroup.alpha = 1;
         Time.timeScale = 0;
         selectionVector = Vector3.zero;
-        EventSystem.current.sendNavigationEvents = false;
+        // EventSystem.current.sendNavigationEvents = false;
+        ChangeSelection(null);
+        onMenuOpen?.Invoke();
     }
 
     void Close()
@@ -61,7 +65,8 @@ public class RadialMenu : MonoBehaviour
         canvasGroup.alpha = 0;
         Time.timeScale = 1;
         SelectCommand();
-        EventSystem.current.sendNavigationEvents = true;
+        // EventSystem.current.sendNavigationEvents = true;
+        onMenuClose?.Invoke();
     }
 
     void HandleItemSelection()
@@ -69,7 +74,8 @@ public class RadialMenu : MonoBehaviour
         // Add a small "dead zone" to prevent accidental selection when input is near zero.
         if (selectionVector.magnitude < 0.4f)
         {
-            if (selectionTime <= 0) ChangeSelection(null);
+            if (selectionTime > 0) selectionTime -= Time.unscaledDeltaTime;
+            else ChangeSelection(null);
             return;
         }
 

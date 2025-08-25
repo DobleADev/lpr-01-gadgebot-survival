@@ -9,7 +9,7 @@ public class GadgebotSurvivalGame : MonoBehaviour
 	public GadgebotGoal goal;
 	public NavigationManager navManager;
 	public bool startGameOnStart;
-	public bool gameRunning;
+	private bool gameRunning;
 	public float startSpawnInterval = 2;
 	public float spawnInterval = 3;
 	public UnityEvent onWin;

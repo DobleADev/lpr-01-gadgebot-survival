@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 50091841157774126}
   - component: {fileID: 61559063345470714}
   - component: {fileID: -4501031386468672315}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Gadgebot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -195,7 +195,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.7, y: 0.92}
+  m_Size: {x: 0.8, y: 0.92}
   m_EdgeRadius: 0
 --- !u!58 &-4501031386468672315
 CircleCollider2D:
