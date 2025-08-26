@@ -3,25 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class GadgebotSurvivalGame : MonoBehaviour
+public class GadgebotSurvivalGameManager : MonoBehaviour
 {
-	public GadgebotSurvivalGameTester tester;
+	public GadgebotSurvivalGameLoader loader;
 	public GadgebotSpawner spawner;
 	public GadgebotGoal goal;
 	public NavigationManager navManager;
 	public bool startGameOnStart;
-	private bool gameRunning;
+	public bool gameRunning { get; private set; }
 	public float startSpawnInterval = 2;
 	public float spawnInterval = 3;
 	public UnityEvent onWin;
 	public UnityEvent onLose;
-	public void SetActiveTester(bool value) { tester.gameObject.SetActive(value); }
 
 	void Awake()
 	{
-		goal.onCountUpdated.AddListener(CheckWin);
-		goal.onCountUpdated.AddListener((count) => CheckLose());
-		spawner.onSpawn.AddListener(OnGadgebotSpawned);
+		if (loader != null) loader.OnSetupLoaded(this);
 	}
 
 	void Start()
@@ -69,6 +66,9 @@ public class GadgebotSurvivalGame : MonoBehaviour
 	{
 		if (gameRunning) return;
 		gameRunning = true;
+		goal.onCountUpdated.AddListener(CheckWin);
+		goal.onCountUpdated.AddListener((count) => CheckLose());
+		spawner.onSpawn.AddListener(OnGadgebotSpawned);
 		StartCoroutine(SpawnLoop());
 	}
 
@@ -77,6 +77,8 @@ public class GadgebotSurvivalGame : MonoBehaviour
 		if (!gameRunning || count != 0) return;
 		gameRunning = false;
 		onWin?.Invoke();
+		// OnGameEnd();
+		// loader.OnGameExit();
 	}
 
 	void CheckLose()
@@ -84,6 +86,8 @@ public class GadgebotSurvivalGame : MonoBehaviour
 		if (!gameRunning || navManager.selectables.Count != 0) return;
 		gameRunning = false;
 		onLose?.Invoke();
+		// OnGameEnd();
+		// loader.OnGameExit();
 	}
 	
 }

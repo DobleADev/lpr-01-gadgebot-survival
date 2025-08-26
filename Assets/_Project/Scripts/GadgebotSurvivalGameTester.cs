@@ -1,26 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GadgebotSurvivalGameTester : MonoBehaviour
 {
-    [SerializeField] GameObject[] _testerObjects;
+    [SerializeField] GadgebotSurvivalGameLoader loader;
+    [SerializeField] GadgebotSurvivalLevelData level;
 
-    private void OnEnable()
+    void Start()
     {
-        SetActiveObjects(true);
+        loader.Play(level);
     }
 
-    void OnDisable()
+    void OnDestroy()
     {
-        SetActiveObjects(false);
+        loader.Reset();
     }
 
-    void SetActiveObjects(bool value)
-    {
-        foreach (var gameObject in _testerObjects)
-        {
-            if (gameObject != null) gameObject.SetActive(value);
-        }
-    }
 }

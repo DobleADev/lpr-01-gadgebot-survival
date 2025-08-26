@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1479,7 +1479,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &502836094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1492,10 +1492,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 571f1e7c7dd0d9044a1c563216fee0f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _testerObjects:
-  - {fileID: 268723894}
-  - {fileID: 219999561}
-  - {fileID: 589627751}
+  loader: {fileID: 0}
+  level: {fileID: 0}
 --- !u!4 &502836095
 Transform:
   m_ObjectHideFlags: 0
@@ -1953,7 +1951,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 10
+  m_Priority: 15
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
@@ -2223,6 +2221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a842316da9671b74f870bd6fe3cdf8b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameCamera: {fileID: 0}
   reticle: {fileID: 305616032}
   commandMenu: {fileID: 499069035}
   prefab: {fileID: 3206753614034274426, guid: 7c4804db73bfd33448a4069269e5a480, type: 3}
@@ -2339,7 +2338,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be50c86cd9d66784fb39997786eedef5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tester: {fileID: 0}
+  loader: {fileID: 0}
   spawner: {fileID: 246138067}
   goal: {fileID: 793661712}
   navManager: {fileID: 805919555}
