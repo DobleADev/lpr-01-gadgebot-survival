@@ -12,7 +12,7 @@ public class NavigationManager : MonoBehaviour
     public NavigationSelectable defaultSelectable;
     public NavigationSelectable currentSelectable;
     public float distanceToDeselect = 1;
-    public float onDeselectCursortOffset = 1f;
+    public float onDeselectCursorOffset = 1f;
     public List<NavigationSelectable> selectables = new List<NavigationSelectable>();
     public NavigationSelectable GetSelectableByGadgebot(Gadgebot gadgebot) => selectables.Where(s => s.gadgebot == gadgebot).FirstOrDefault();
 
@@ -120,11 +120,8 @@ public class NavigationManager : MonoBehaviour
         {
             if (reticle.cursorVectorOnSelected.magnitude > distanceToDeselect)
             {
-                // Vector3 cursorOffset = Camera.main.ScreenToWorldPoint(reticle.cursorVectorOnSelected);
                 Vector3 direction = reticle.cursorVectorOnSelected.normalized;
-                
-                // defaultSelectable.transform.position = currentSelectable.transform.position + (onDeselectCursortOffset * direction);
-                reticle.position += (onDeselectCursortOffset * direction);
+                reticle.position += onDeselectCursorOffset * direction;
                 UpdateCurrentSelectable(null);
             }
         }

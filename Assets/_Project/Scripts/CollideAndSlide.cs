@@ -53,7 +53,7 @@ public static class CollideAndSlide
             if (remainingSpeed < Mathf.Epsilon) break;
 
             if (rigidbody2D.Cast(Vector2.down, contactFilter2D, snapHit, remainingSpeed + skinWidth) > 0
-            && Vector2.Angle(remainingDirection, Vector2.down) <= 90
+            && Vector2.Dot(remainingDirection, Vector2.down) <= 0
             )
             {
                 Vector2 snapVector = Mathf.Max(0, snapHit[0].distance - skinWidth) * Vector2.down;
@@ -78,9 +78,9 @@ public static class CollideAndSlide
                 float hitAngle;
                 foreach (var hit in castHit)
                 {
-                    hitAngle = Vector2.Angle(hit.normal, Vector2.up);
+                    hitAngle = Vector2.Dot(hit.normal, Vector2.up);
                     castNormal += 
-                    hitAngle > maxSlopeAngle && hitAngle < 90 ?
+                    hitAngle < Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad) && hitAngle > 0 ?
                     Vector2.zero :
                     hit.normal;
                 }

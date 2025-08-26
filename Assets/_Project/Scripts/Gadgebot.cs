@@ -12,7 +12,7 @@ public class Gadgebot : MonoBehaviour
 	public GadgebotElectrifyCommand electrifyCommand = new GadgebotElectrifyCommand();
 	public GadgebotBridgeCommand bridgeCommand = new GadgebotBridgeCommand();
 	public GadgebotDetonateCommand detonateCommand = new GadgebotDetonateCommand();
-	public GadgebotCommandState currentCommand;
+	public GadgebotState currentCommand;
 	public float speed = 1;
 	public float gravityScale = 1;
 	public float maxFallSpeed = 2;
@@ -20,7 +20,8 @@ public class Gadgebot : MonoBehaviour
 	public bool isGrounded;
 	public int direction = 1;
 	public bool walk = true;
-	public Collider2D ground;
+	public bool physicsEnabled = true;
+	public LayerMask groundLayer = 1;
 	public GadgebotUnityEvent onDestroy;
 	MaterialPropertyBlock lightProperty;
 
@@ -36,25 +37,8 @@ public class Gadgebot : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		RaycastHit2D[] groundHit = new RaycastHit2D[1];
-		isGrounded = Physics2D.BoxCastNonAlloc(physics.position + new Vector2(0, -0.5f), new Vector2(0.8f, 0.1f), 0, Vector2.down, groundHit, 0.01f) > 0;
-		Vector2 movement = Vector2.zero;
-
-		if (isGrounded)
-		{
-			ground = groundHit[0].collider;
-			if (walk) movement = direction * Vector2.right * speed;
-			fallVelocity = Vector2.zero;
-		}
-		else
-		{
-			ground = null;
-			movement = fallVelocity;
-			fallVelocity += Time.deltaTime * Physics2D.gravity * gravityScale;
-			fallVelocity = Vector2.ClampMagnitude(fallVelocity, maxFallSpeed);
-		}
-
-		physics.Walk(Time.deltaTime * movement, 45, 0.08f, 2, 1);
+		HandleMovement();
+		currentCommand.FixedUpdate(this);
 	}
 
 	void OnTriggerEnter2D(Collider2D other)
@@ -69,12 +53,40 @@ public class Gadgebot : MonoBehaviour
 			Destroy(gameObject);
 		}
 
-		currentCommand.OnTriggerEnter2D(other);
+		currentCommand.OnTriggerEnter2D(this, other);
 	}
 
 	void OnDestroy()
 	{
 		onDestroy?.Invoke(this);
+	}
+
+	void OnDrawGizmos()
+	{
+		Gizmos.color = new Color(1, 1, 1, 0.4f);
+		Gizmos.DrawWireCube(physics.position + new Vector2(0, -0.5f), new Vector2(0.75f, 0.1f));
+		currentCommand.OnDrawGizmos(this);
+	}
+
+	void HandleMovement()
+	{
+		if (!physicsEnabled) return;
+		isGrounded = Physics2D.OverlapBox(physics.position + new Vector2(0, -0.5f), new Vector2(0.75f, 0.1f), 0, groundLayer) != null;
+		Vector2 movement = Vector2.zero;
+
+		if (isGrounded)
+		{
+			if (walk) movement = direction * Vector2.right * speed;
+			fallVelocity = Vector2.zero;
+		}
+		else
+		{
+			movement = fallVelocity;
+			fallVelocity += Time.deltaTime * Physics2D.gravity * gravityScale;
+			fallVelocity = Vector2.ClampMagnitude(fallVelocity, maxFallSpeed);
+		}
+
+		physics.Walk(Time.deltaTime * movement, 45, 0.08f, 2, 1);
 	}
 
 	void ChangeLightColor(Color color)
@@ -83,10 +95,30 @@ public class Gadgebot : MonoBehaviour
 		lightRenderer.SetPropertyBlock(lightProperty);
 	}
 
-	public void Detonate()
+	bool IsLike(string a, string b) { return a.Equals(b, StringComparison.OrdinalIgnoreCase); }
+
+	void ChangeCommandState(GadgebotState commandState)
 	{
-		Destroy(ground.gameObject);
+		if (commandState == null || currentCommand == commandState) return;
+		if (currentCommand != null)
+		{
+			if (!currentCommand.CanChangeCommand(this)) return;
+			currentCommand.OnCommandExit(this);
+		}
+		(currentCommand = commandState).OnCommandEnter(this);
+		ChangeLightColor(currentCommand.lightColor);
+	}
+
+	public void TryDestroyGameObject(GameObject gameObject)
+	{
+		if (gameObject == null) return;
 		Destroy(gameObject);
+	}
+
+	public void TryDestroyGameObject(Component component)
+	{
+		if (component == null) return;
+		Destroy(component.gameObject);
 	}
 
 	public void RequestCommandChange(GadgebotCommandOption commandOption)
@@ -97,163 +129,133 @@ public class Gadgebot : MonoBehaviour
 			case string str when IsLike(str, "electrify"): ChangeCommandState(electrifyCommand); break;
 			case string str when IsLike(str, "bridge"): ChangeCommandState(bridgeCommand); break;
 			case string str when IsLike(str, "detonate"): ChangeCommandState(detonateCommand); break;
-			// case "swing": ChangeCommandState(swingCommand);
-			// case "electrify": ChangeCommandState(electrifyCommand); break;
-			// case "bridge": ChangeCommandState(bridgeCommand); break;
-			// case "detonate": ChangeCommandState(detonateCommand); break;
 			default: ChangeCommandState(followCommand); break;
 		}
 	}
+}
 
-	bool IsLike(string a, string b) { return a.Equals(b, StringComparison.OrdinalIgnoreCase); }
-
-	public void ChangeCommandState(GadgebotCommandState commandState)
+[System.Serializable]
+public class GadgebotFollowCommand : GadgebotState
+{
+	// public override void OnCommandEnter(Gadgebot gadgebot) {}
+	// public override void OnCommandExit(Gadgebot gadgebot) {}
+	// public override void OnTriggerEnter2D(Gadgebot gadgebot, Collider2D other) {}
+	// public override void OnDrawGizmos(Gadgebot gadgebot) {}
+	// public override bool CanChangeCommand(Gadgebot gadgebot) { return true; }
+}
+[System.Serializable]
+public class GadgebotSwingCommand : GadgebotState
+{
+	// public override void OnCommandEnter(Gadgebot gadgebot) {}
+	// public override void OnCommandExit(Gadgebot gadgebot) {}
+	// public override void FixedUpdate(Gadgebot gadgebot) {}
+	// public override void OnTriggerEnter2D(Gadgebot gadgebot, Collider2D other) {}
+	// public override void OnDrawGizmos(Gadgebot gadgebot) {}
+	// public override bool CanChangeCommand(Gadgebot gadgebot) { return true; }
+}
+[System.Serializable]
+public class GadgebotElectrifyCommand : GadgebotState
+{
+	// public override void OnCommandEnter(Gadgebot gadgebot) {}
+	// public override void OnCommandExit(Gadgebot gadgebot) {}
+	// public override void FixedUpdate(Gadgebot gadgebot) {}
+	// public override void OnTriggerEnter2D(Gadgebot gadgebot, Collider2D other) {}
+	// public override void OnDrawGizmos(Gadgebot gadgebot) {}
+	// public override bool CanChangeCommand(Gadgebot gadgebot) { return true; }
+}
+[System.Serializable]
+public class GadgebotBridgeCommand : GadgebotState
+{
+	// public override void OnCommandEnter(Gadgebot gadgebot) {}
+	// public override void OnCommandExit(Gadgebot gadgebot) {}
+	public GameObject bridgeBlock;
+	public float jumpMaxApex = 1;
+	public float jumpDuration = 1;
+	public bool triggered;
+	public override void FixedUpdate(Gadgebot gadgebot)
 	{
-		if (commandState == null || currentCommand == commandState) return;
-		if (currentCommand != null)
+		if (triggered) return;
+
+		if (gadgebot.isGrounded && Physics2D.OverlapPoint((Vector2)gadgebot.transform.position + new Vector2(gadgebot.direction * 0.5f, -0.6f), gadgebot.groundLayer))
 		{
-			if (!currentCommand.CanChangeCommand()) return;
-			currentCommand.OnCommandExit();
+			gadgebot.StartCoroutine(GoBridge(gadgebot));
 		}
-		(currentCommand = commandState).OnCommandEnter(this);
-		ChangeLightColor(currentCommand.lightColor);
 	}
-}
 
-[System.Serializable]
-public class GadgebotFollowCommand : GadgebotCommandState
-{
-	public override void OnCommandEnter(Gadgebot gadgebot)
+	IEnumerator GoBridge(Gadgebot gadgebot)
 	{
-		this.gadgebot = gadgebot;
+		Vector3 initialPosition = gadgebot.transform.position;
+		Vector3 endPosition = gadgebot.transform.position;
+		float t = 0;
+		float deltaDuration = 1 / jumpDuration;
+		while (t < 1)
+		{
+
+			t += deltaDuration * Time.deltaTime;
+			yield return null;
+		}
+		gadgebot.transform.position = endPosition;
+
 	}
 
-	public override void OnCommandExit()
+	public override void OnDrawGizmos(Gadgebot gadgebot)
 	{
-
+		if (triggered || !gadgebot.isGrounded) return;
+		Gizmos.color = lightColor;
+		Gizmos.DrawWireCube((Vector2)gadgebot.transform.position + new Vector2(gadgebot.direction * 0.5f, -0.6f), 0.1f * Vector2.one);
 	}
-
-	public override void OnTriggerEnter2D(Collider2D other)
-	{
-
-	}
-
-	public override bool CanChangeCommand()
-	{
-		return true;
-	}
+	public override bool CanChangeCommand(Gadgebot gadgebot) { return !triggered; }
 }
 [System.Serializable]
-public class GadgebotSwingCommand : GadgebotCommandState
-{
-	public override void OnCommandEnter(Gadgebot gadgebot)
-	{
-		this.gadgebot = gadgebot;
-	}
-
-	public override void OnCommandExit()
-	{
-
-	}
-
-	public override void OnTriggerEnter2D(Collider2D other)
-	{
-
-	}
-
-	public override bool CanChangeCommand()
-	{
-		return true;
-	}
-}
-[System.Serializable]
-public class GadgebotElectrifyCommand : GadgebotCommandState
-{
-	public override void OnCommandEnter(Gadgebot gadgebot)
-	{
-		this.gadgebot = gadgebot;
-	}
-
-	public override void OnCommandExit()
-	{
-
-	}
-
-	public override void OnTriggerEnter2D(Collider2D other)
-	{
-
-	}
-
-	public override bool CanChangeCommand()
-	{
-		return true;
-	}
-}
-[System.Serializable]
-public class GadgebotBridgeCommand : GadgebotCommandState
-{
-	public override void OnCommandEnter(Gadgebot gadgebot)
-	{
-		this.gadgebot = gadgebot;
-	}
-
-	public override void OnCommandExit()
-	{
-
-	}
-
-	public override void OnTriggerEnter2D(Collider2D other)
-	{
-
-	}
-
-	public override bool CanChangeCommand()
-	{
-		return true;
-	}
-}
-[System.Serializable]
-public class GadgebotDetonateCommand : GadgebotCommandState
+public class GadgebotDetonateCommand : GadgebotState
 {
 	public float detonationBuildUpSeconds = 3;
 	private Coroutine detonateCoroutine;
 
-	IEnumerator ExplosionProcess()
+	IEnumerator ExplosionProcess(Gadgebot gadgebot)
 	{
 		yield return new WaitForSeconds(detonationBuildUpSeconds);
-		gadgebot.Detonate();
+		Detonate(gadgebot);
+	}
+
+	void Detonate(Gadgebot gadgebot)
+	{
+		Vector2 gadgebotPosition = gadgebot.transform.position;
+		gadgebot.TryDestroyGameObject(Physics2D.OverlapPoint(gadgebotPosition + new Vector2(0, -0.6f), gadgebot.groundLayer)); // ground
+		gadgebot.TryDestroyGameObject(Physics2D.OverlapPoint(gadgebotPosition + new Vector2(-0.5f, 0), 1 << gadgebot.gameObject.layer)); // left gadgebot
+		gadgebot.TryDestroyGameObject(Physics2D.OverlapPoint(gadgebotPosition + new Vector2(0.5f, 0), 1 << gadgebot.gameObject.layer)); // right gadgebot
+		gadgebot.TryDestroyGameObject(gadgebot);
 	}
 
 	public override void OnCommandEnter(Gadgebot gadgebot)
 	{
-		this.gadgebot = gadgebot;
 		gadgebot.walk = false;
-		detonateCoroutine = gadgebot.StartCoroutine(ExplosionProcess());
+		detonateCoroutine = gadgebot.StartCoroutine(ExplosionProcess(gadgebot));
 	}
 
-	public override void OnCommandExit()
+	public override void OnCommandExit(Gadgebot gadgebot)
 	{
 		if (detonateCoroutine != null) gadgebot.StopCoroutine(detonateCoroutine);
 		gadgebot.walk = true;
 	}
 
-	public override void OnTriggerEnter2D(Collider2D other)
+	public override void OnDrawGizmos(Gadgebot gadgebot)
 	{
-
-	}
-
-	public override bool CanChangeCommand()
-	{
-		return true;
+		Vector2 gadgebotPosition = gadgebot.transform.position;
+		Gizmos.color = lightColor;
+		Gizmos.DrawWireCube(gadgebotPosition + new Vector2(0, -0.6f), 0.1f * Vector2.one);
+		Gizmos.DrawWireCube(gadgebotPosition + new Vector2(-0.5f, 0), 0.1f * Vector2.one);
+		Gizmos.DrawWireCube(gadgebotPosition + new Vector2(0.5f, 0), 0.1f * Vector2.one);
 	}
 }
-public abstract class GadgebotCommandState
+public abstract class GadgebotState
 {
-	[SerializeField] Color _lightColor = new Color(1,1,1,1);
-	public Color lightColor { get { return _lightColor; }}
-	protected Gadgebot gadgebot;
-	public abstract void OnCommandEnter(Gadgebot gadgebot);
-	public abstract void OnCommandExit();
-	public abstract void OnTriggerEnter2D(Collider2D other);
-	public abstract bool CanChangeCommand();
+	[SerializeField] Color _lightColor = new Color(1, 1, 1, 1);
+	public Color lightColor { get { return _lightColor; } }
+	public virtual void OnCommandEnter(Gadgebot gadgebot) { }
+	public virtual void OnCommandExit(Gadgebot gadgebot) { }
+	public virtual void FixedUpdate(Gadgebot gadgebot) { }
+	public virtual void OnTriggerEnter2D(Gadgebot gadgebot, Collider2D other) { }
+	public virtual void OnDrawGizmos(Gadgebot gadgebot) { }
+	public virtual bool CanChangeCommand(Gadgebot gadgebot) { return true; }
 }

@@ -29,6 +29,7 @@ public class NavigationCursor : MonoBehaviour
     private MaterialPropertyBlock _mpb;
     Vector3 cursorPosition;
     public float timeScale = 1;
+    public float gadgebotDetectionSize = 1;
     public Camera gameCamera;
     public LayerMask gadgebotLayer = 0;
     public Vector2 cursorVectorOnSelected;
@@ -140,7 +141,8 @@ public class NavigationCursor : MonoBehaviour
     {
         Color rayColor = Color.gray;
         Vector2 origin = transform.position;
-        Collider2D collider = Physics2D.OverlapPoint(origin, gadgebotLayer);
+        // Collider2D collider = Physics2D.OverlapPoint(origin, gadgebotLayer);
+        Collider2D collider = Physics2D.OverlapCircle(origin, gadgebotDetectionSize, gadgebotLayer);
         if (collider == null)
         {
             // Debug.DrawRay(origin, Vector3.forward * 100f, rayColor);

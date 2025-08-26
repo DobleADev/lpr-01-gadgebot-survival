@@ -28,6 +28,7 @@ public class RadialMenu : MonoBehaviour
         {
             uiOptions[i].Init(options[i]);
         }
+        selectedLabel.text = "";
     }
 
     void Update()

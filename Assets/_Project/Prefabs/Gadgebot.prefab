@@ -139,6 +139,9 @@ MonoBehaviour:
   detonateCommand:
     _lightColor: {r: 1, g: 0.6865982, b: 0.07058823, a: 1}
     detonationBuildUpSeconds: 2
+    groundLayer:
+      serializedVersion: 2
+      m_Bits: 1
   speed: 1
   gravityScale: 0.5
   maxFallSpeed: 5
@@ -146,7 +149,7 @@ MonoBehaviour:
   isGrounded: 0
   direction: 1
   walk: 1
-  ground: {fileID: 0}
+  physicsEnabled: 1
   onDestroy:
     m_PersistentCalls:
       m_Calls: []
@@ -195,7 +198,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.8, y: 0.92}
+  m_Size: {x: 0.75, y: 0.92}
   m_EdgeRadius: 0
 --- !u!58 &-4501031386468672315
 CircleCollider2D:
