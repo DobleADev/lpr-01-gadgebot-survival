@@ -6,6 +6,7 @@ using System.Linq;
 
 public class NavigationManager : MonoBehaviour
 {
+    public Camera gameCamera;
     public NavigationCursor reticle;
     public RadialMenu commandMenu;
     public NavigationSelectable prefab;
@@ -21,6 +22,7 @@ public class NavigationManager : MonoBehaviour
         commandMenu.onSelect.AddListener(RequestCommandToCurrentSelectable);
         commandMenu.onMenuOpen.AddListener(OnCommandMenuOpen);
         commandMenu.onMenuClose.AddListener(OnCommandMenuClose);
+        if (gameCamera == null) gameCamera = Camera.main;
     }
 
     void OnDestroy()
@@ -44,7 +46,7 @@ public class NavigationManager : MonoBehaviour
         newSelectable.onSelected.AddListener(() => UpdateCurrentSelectable(newSelectable));
         // newSelectable.onExited.AddListener(() => UpdateCurrentSelectable(null));
         newSelectable.gadgebot = gadgebot;
-        newSelectable.KeepInGadgebot();
+        if (gameCamera != null) newSelectable.KeepInGadgebot(gameCamera);
         selectables.Add(newSelectable);
 
     }
@@ -86,6 +88,7 @@ public class NavigationManager : MonoBehaviour
 
     void SetEventSystemSelectable(NavigationSelectable selectable)
     {
+        if (EventSystem.current == null) return;
         if (EventSystem.current.currentSelectedGameObject == selectable.gameObject) return;
         EventSystem.current.SetSelectedGameObject(selectable.gameObject);
     }
@@ -104,9 +107,10 @@ public class NavigationManager : MonoBehaviour
 
     void LateUpdate()
     {
+        if (gameCamera == null) return;
         foreach (var selectable in selectables)
         {
-            selectable.KeepInGadgebot();
+            selectable.KeepInGadgebot(gameCamera);
         }
 
         reticle.UpdatePosition();

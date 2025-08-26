@@ -5,6 +5,7 @@ using UnityEngine.Events;
 
 public class GadgebotSurvivalGame : MonoBehaviour
 {
+	public GadgebotSurvivalGameTester tester;
 	public GadgebotSpawner spawner;
 	public GadgebotGoal goal;
 	public NavigationManager navManager;
@@ -14,12 +15,18 @@ public class GadgebotSurvivalGame : MonoBehaviour
 	public float spawnInterval = 3;
 	public UnityEvent onWin;
 	public UnityEvent onLose;
+	public void SetActiveTester(bool value) { tester.gameObject.SetActive(value); }
 
 	void Awake()
 	{
 		goal.onCountUpdated.AddListener(CheckWin);
 		goal.onCountUpdated.AddListener((count) => CheckLose());
 		spawner.onSpawn.AddListener(OnGadgebotSpawned);
+	}
+
+	void Start()
+	{
+		if (startGameOnStart) StartGame();
 	}
 
 	void OnDestroy()
@@ -40,11 +47,6 @@ public class GadgebotSurvivalGame : MonoBehaviour
 		gadgebot.onDestroy.RemoveListener(OnGadgebotDestroy);
 		navManager.RemoveSelectable(gadgebot);
 		CheckLose();
-	}
-
-	void Start()
-	{
-		if (startGameOnStart) StartGame();
 	}
 
 	IEnumerator SpawnLoop()

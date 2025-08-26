@@ -51,7 +51,7 @@ public class NavigationCursor : MonoBehaviour
 
     void Awake()
     {
-        gameCamera = Camera.main;
+        if (gameCamera == null) gameCamera = Camera.main;
         cursorPosition.x = Screen.width * 0.5f;
         cursorPosition.y = Screen.height * 0.5f;
     }
