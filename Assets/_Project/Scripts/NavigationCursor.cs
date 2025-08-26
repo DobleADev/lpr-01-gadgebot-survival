@@ -30,6 +30,7 @@ public class NavigationCursor : MonoBehaviour
     Vector3 cursorPosition;
     public float timeScale = 1;
     public float gadgebotDetectionSize = 1;
+    public float gameplayDepth = 0;
     public Camera gameCamera;
     public LayerMask gadgebotLayer = 0;
     public Vector2 cursorVectorOnSelected;
@@ -45,6 +46,8 @@ public class NavigationCursor : MonoBehaviour
             transform.position = value;
         }
     }
+
+    Vector3 debugOrigin;
 
     void Awake()
     {
@@ -132,6 +135,12 @@ public class NavigationCursor : MonoBehaviour
         UpdateColor(selectableSelected);
     }
 
+    void OnDrawGizmos()
+    {
+        // Gizmos.DrawWireCube(debugOrigin, 0.1f * Vector2.one);
+        Gizmos.DrawWireSphere(debugOrigin, gadgebotDetectionSize);
+    }
+
     public Vector3 GetScreenPosition()
     {
         return gameCamera.WorldToScreenPoint(transform.position);
@@ -140,7 +149,10 @@ public class NavigationCursor : MonoBehaviour
     public Gadgebot DoGadgebotRaycast()
     {
         Color rayColor = Color.gray;
-        Vector2 origin = transform.position;
+        Vector3 screenPosition = GetScreenPosition();
+        screenPosition.z = gameplayDepth - gameCamera.transform.position.z;
+        Vector2 origin = gameCamera.ScreenToWorldPoint(screenPosition);
+        debugOrigin = origin;
         // Collider2D collider = Physics2D.OverlapPoint(origin, gadgebotLayer);
         Collider2D collider = Physics2D.OverlapCircle(origin, gadgebotDetectionSize, gadgebotLayer);
         if (collider == null)
