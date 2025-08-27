@@ -15,6 +15,7 @@ public class GadgebotSurvivalGameLoader : ScriptableObject
     public event Action onGameLoadStart;
     public event Action onGameLoadEnd;
 
+    [Serializable]
     public struct LevelDependencies
     {
         public GadgebotSpawner gadgebotSpawner { get; private set; }
@@ -45,7 +46,12 @@ public class GadgebotSurvivalGameLoader : ScriptableObject
         return gameManager.gameRunning;
     }
 
-    public void Play(GadgebotSurvivalLevelData level)
+    void CancelLoading()
+    {
+        Reset();
+    }
+
+    public void Play(string levelName)
     {
         if (IsGameRunning() || onLoading) return;
         onLoading = true;
@@ -53,18 +59,21 @@ public class GadgebotSurvivalGameLoader : ScriptableObject
 
         SceneManager.LoadScene(setupSceneName, LoadSceneMode.Additive);
         loadedGameScenes.Add(setupSceneName);
-        SceneManager.LoadScene(level.levelName, LoadSceneMode.Additive);
-        loadedGameScenes.Add(level.levelName);
+        SceneManager.LoadScene(levelName, LoadSceneMode.Additive);
+        loadedGameScenes.Add(levelName);
+        
     }
 
     public void OnSetupLoaded(GadgebotSurvivalGameManager gameManager)
     {
+        if (!onLoading) return;
         this.gameManager = gameManager;
         ValidateGameStartup();
     }
 
     public void OnLevelLoaded(LevelDependencies levelDependencies)
     {
+        if (!onLoading) return;
         this.levelDependencies = levelDependencies;
         ValidateGameStartup();
     }
@@ -72,19 +81,21 @@ public class GadgebotSurvivalGameLoader : ScriptableObject
     void ValidateGameStartup()
     {
         if (
-            gameManager != null
-            &&
-            levelDependencies.gadgebotSpawner != null
-            &&
-            levelDependencies.gadgebotGoal != null
+            gameManager == null
+            ||
+            levelDependencies.gadgebotSpawner == null
+            ||
+            levelDependencies.gadgebotGoal == null
         )
         {
-            gameManager.spawner = levelDependencies.gadgebotSpawner;
-            gameManager.goal = levelDependencies.gadgebotGoal;
-            gameManager.StartGame();
+            return;
         }
+        gameManager.spawner = levelDependencies.gadgebotSpawner;
+        gameManager.goal = levelDependencies.gadgebotGoal;
+        gameManager.StartGame();
         onLoading = false;
         onGameLoadEnd?.Invoke();
+        
     }
 
     public void OnGameExit()

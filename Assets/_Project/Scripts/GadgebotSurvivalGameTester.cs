@@ -7,12 +7,12 @@ public class GadgebotSurvivalGameTester : MonoBehaviour
 
     void Start()
     {
-        loader.Play(level);
+        loader.Play(level.levelName);
     }
 
-    void OnDestroy()
-    {
-        loader.Reset();
-    }
+    // void OnDestroy()
+    // {
+    //     loader.Reset();
+    // }
 
 }

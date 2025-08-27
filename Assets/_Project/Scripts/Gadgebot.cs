@@ -16,7 +16,8 @@ public class Gadgebot : MonoBehaviour
 	public GadgebotState currentCommand;
 	public float speed = 1;
 	public float gravityScale = 1;
-	public float maxFallSpeed = 2;
+	public float maxFallSpeed = 12;
+	public float fallSpeedDeathThreshold = 8;
 	public Vector2 fallVelocity;
 	public bool isGrounded;
 	public Collider2D ground;
@@ -43,7 +44,23 @@ public class Gadgebot : MonoBehaviour
 		currentCommand.FixedUpdate(this);
 	}
 
-	void OnTriggerEnter2D(Collider2D other)
+	void OnPhysicsCollision2D(Collider2D collider)
+	{
+		if (collider.TryGetComponent(out GadgebotSurvivalDirectionBlock directionBlock))
+		{
+			direction = directionBlock.direction;
+		}
+
+		if (collider.TryGetComponent(out Gadgebot gadgebot))
+		{
+			if (Vector2.Angle((gadgebot.transform.position - transform.position).normalized, Vector2.down) < 15)
+			{
+				Destroy(gadgebot);
+			}
+		}
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.TryGetComponent(out GadgebotGoal goal))
 		{
@@ -77,13 +94,18 @@ public class Gadgebot : MonoBehaviour
 			// fallVelocity = Vector2.zero;
 			return;
 		}
-		ground = Physics2D.OverlapBox(physics.position + new Vector2(0, -0.5f), new Vector2(boxCollider.size.x, 0.1f), 0, groundLayer);
-		isGrounded = ground != null;
+		// ground = Physics2D.OverlapBox(physics.position + new Vector2(0, -0.5f), new Vector2(boxCollider.size.x, 0.1f), 0, groundLayer);
+		// isGrounded = ground != null;
 		Vector2 movement = Vector2.zero;
 
 		if (isGrounded)
 		{
+			// if (ground.TryGetComponent(out GadgebotSurvivalDirectionBlock directionBlock))
+			// {
+			// 	direction = directionBlock.direction;
+			// }
 			if (walk) movement = direction * Vector2.right * speed;
+			if (fallVelocity.y < -fallSpeedDeathThreshold) Destroy(gameObject);
 			fallVelocity = Vector2.zero;
 		}
 		else
@@ -93,7 +115,11 @@ public class Gadgebot : MonoBehaviour
 			fallVelocity = Vector2.ClampMagnitude(fallVelocity, maxFallSpeed);
 		}
 
-		physics.Walk(Time.deltaTime * movement, 45, 0.08f, 2, 1);
+		physics.Slide(Time.deltaTime * movement, 0.08f, 2);
+		// physics.Walk(Time.deltaTime * movement, 45, 0.08f, 2, 1);
+
+		ground = Physics2D.OverlapBox(physics.position + new Vector2(0, -0.5f), new Vector2(boxCollider.size.x, 0.1f), 0, groundLayer);
+		isGrounded = ground != null;
 	}
 
 	void ChangeLightColor(Color color)
@@ -201,7 +227,6 @@ public class GadgebotBridgeCommand : GadgebotState
 	// public override void OnCommandEnter(Gadgebot gadgebot) {}
 	// public override void OnCommandExit(Gadgebot gadgebot) {}
 	public GameObject bridgeBlockPrefab;
-	public GameObject bridgeBlock;
 	public float jumpMaxApex = 1;
 	public float jumpDuration = 1;
 	public bool triggered;
@@ -209,7 +234,7 @@ public class GadgebotBridgeCommand : GadgebotState
 	{
 		if (triggered) return;
 
-		if (gadgebot.isGrounded && !Physics2D.OverlapPoint((Vector2)gadgebot.transform.position + new Vector2(0, -0.6f), gadgebot.groundLayer))
+		if (gadgebot.isGrounded && gadgebot.fallVelocity.y == 0 && !Physics2D.OverlapPoint((Vector2)gadgebot.transform.position + new Vector2(0, -0.6f), gadgebot.groundLayer))
 		{
 			triggered = true;
 			gadgebot.StartCoroutine(GoBridge(gadgebot));
@@ -235,7 +260,7 @@ public class GadgebotBridgeCommand : GadgebotState
 		}
 		gadgebotTransform.position = endPosition;
 		// gadgebot.boxCollider.enabled = false;
-		bridgeBlock = gadgebot.TryInstantiate(bridgeBlockPrefab, endPosition, Quaternion.identity);
+		gadgebot.TryInstantiate(bridgeBlockPrefab, endPosition, Quaternion.identity);
 		gadgebot.TryDestroyGameObject(gadgebot);
 	}
 

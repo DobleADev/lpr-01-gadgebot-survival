@@ -25,6 +25,7 @@ public static class CollideAndSlide
                 remainingDirection = remainingDirection.ProjectOnPlane(castHit[0].normal);
                 accumulatedVelocity += velocityTillContact;
                 rigidbody2D.position += velocityTillContact;
+                rigidbody2D.SendMessage("OnPhysicsCollision2D", castHit[0].collider);
             }
             else
             {

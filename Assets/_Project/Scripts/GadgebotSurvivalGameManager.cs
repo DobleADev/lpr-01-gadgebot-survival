@@ -28,6 +28,7 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 
 	void OnDestroy()
 	{
+		if (loader != null && gameRunning) loader.Reset();
 		goal.onCountUpdated.RemoveListener(CheckWin);
 		goal.onCountUpdated.RemoveListener((count) => CheckLose());
 		spawner.onSpawn.RemoveListener(OnGadgebotSpawned);
