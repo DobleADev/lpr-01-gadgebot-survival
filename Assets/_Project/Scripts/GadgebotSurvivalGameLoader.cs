@@ -18,18 +18,18 @@ public class GadgebotSurvivalGameLoader : ScriptableObject
     [Serializable]
     public struct LevelDependencies
     {
-        public GadgebotSpawner gadgebotSpawner { get; private set; }
-        public GadgebotGoal gadgebotGoal { get; private set; }
-        public LevelDependencies(GadgebotSpawner spawner, GadgebotGoal goal)
+        public GadgebotSurvivalSpawner GadgebotSurvivalSpawner { get; private set; }
+        public GadgebotSurvivalGoal GadgebotSurvivalGoal { get; private set; }
+        public LevelDependencies(GadgebotSurvivalSpawner spawner, GadgebotSurvivalGoal goal)
         {
-            gadgebotSpawner = spawner;
-            gadgebotGoal = goal;
+            GadgebotSurvivalSpawner = spawner;
+            GadgebotSurvivalGoal = goal;
         }
 
         public void CleanDependencies()
         {
-            gadgebotSpawner = null;
-            gadgebotGoal = null;
+            GadgebotSurvivalSpawner = null;
+            GadgebotSurvivalGoal = null;
         }
     }
 
@@ -83,15 +83,15 @@ public class GadgebotSurvivalGameLoader : ScriptableObject
         if (
             gameManager == null
             ||
-            levelDependencies.gadgebotSpawner == null
+            levelDependencies.GadgebotSurvivalSpawner == null
             ||
-            levelDependencies.gadgebotGoal == null
+            levelDependencies.GadgebotSurvivalGoal == null
         )
         {
             return;
         }
-        gameManager.spawner = levelDependencies.gadgebotSpawner;
-        gameManager.goal = levelDependencies.gadgebotGoal;
+        gameManager.spawner = levelDependencies.GadgebotSurvivalSpawner;
+        gameManager.goal = levelDependencies.GadgebotSurvivalGoal;
         gameManager.StartGame();
         onLoading = false;
         onGameLoadEnd?.Invoke();

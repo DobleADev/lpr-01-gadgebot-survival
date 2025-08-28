@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/_Project/Scenes/gadgebot-survival-tester.unity
+    path: Assets/_Project/Scenes/gadgebot-survival-tests.unity
     guid: 59f97bcb8a390b546ad5f4eee703e240
   - enabled: 1
     path: Assets/_Project/Scenes/gadgebot-survival-setup.unity

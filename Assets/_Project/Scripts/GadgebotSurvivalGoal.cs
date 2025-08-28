@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class GadgebotGoal : MonoBehaviour
+public class GadgebotSurvivalGoal : MonoBehaviour
 {
     [SerializeField, Min(0)] private int _count = 3;
     public int count

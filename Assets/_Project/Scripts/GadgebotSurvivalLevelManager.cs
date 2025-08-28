@@ -3,12 +3,16 @@
 public class GadgebotSurvivalLevelManager : MonoBehaviour
 {
     [SerializeField] GadgebotSurvivalGameLoader loader;
-    [SerializeField] GadgebotSpawner gadgebotSpawner;
-    [SerializeField] GadgebotGoal gadgebotGoal;
+    [SerializeField] GadgebotSurvivalSpawner GadgebotSurvivalSpawner;
+    [SerializeField] GadgebotSurvivalGoal GadgebotSurvivalGoal;
+    [SerializeField] int spawnCount = 0;
+    [SerializeField] int goalCount = 0;
 
     void Awake()
     {
-        loader.OnLevelLoaded(new GadgebotSurvivalGameLoader.LevelDependencies(gadgebotSpawner, gadgebotGoal));
+        GadgebotSurvivalSpawner.count = spawnCount;
+        GadgebotSurvivalGoal.count = goalCount;
+        if (loader != null) loader.OnLevelLoaded(new GadgebotSurvivalGameLoader.LevelDependencies(GadgebotSurvivalSpawner, GadgebotSurvivalGoal));
     }
 
 }

@@ -4,7 +4,11 @@ using UnityEngine;
 
 public static class CollideAndSlide
 {
-    public static void Slide(this Rigidbody2D rigidbody2D, Vector2 velocity, float skinWidth = 0.08f, float maxIterations = 3)
+    public static void Slide(
+        this Rigidbody2D rigidbody2D
+    , Vector2 velocity
+    , float skinWidth = 0.08f
+    , float maxIterations = 3)
     {
         Vector2 initialPosition = rigidbody2D.position;
         RaycastHit2D[] castHit = new RaycastHit2D[1];
@@ -36,7 +40,12 @@ public static class CollideAndSlide
         rigidbody2D.MovePosition(initialPosition + accumulatedVelocity);
     }
 
-    public static void Walk(this Rigidbody2D rigidbody2D, Vector2 velocity, float maxSlopeAngle = 45, float skinWidth = 0.08f, int maxIterations = 5, int accuracy = 3)
+    public static void Walk(this Rigidbody2D rigidbody2D
+    , Vector2 velocity
+    , float maxSlopeAngle = 45
+    , float skinWidth = 0.08f
+    , int maxIterations = 5
+    , int accuracy = 3)
     {
         Vector2 initialPosition = rigidbody2D.position;
         RaycastHit2D[] castHit = new RaycastHit2D[accuracy];
@@ -60,17 +69,34 @@ public static class CollideAndSlide
                 Vector2 snapVector = Mathf.Max(0, snapHit[0].distance - skinWidth) * Vector2.down;
                 Vector2 snapNormal = Vector2.zero;
                 foreach (var hit in snapHit) { snapNormal += hit.normal; }
-                if (!isProjectedOnIteration)
-                {
-                    remainingDirection = remainingDirection.ProjectOnPlane(snapNormal.normalized).normalized;
-                }
 
-                accumulatedVelocity += snapVector;
-                rigidbody2D.position += snapVector;
+                // Vector2 downOrigin = rigidbody2D.ClosestPoint(new Vector2(rigidbody2D.position.x, -Mathf.Infinity)) + new Vector2(0f, -skinWidth);
+                Vector2 downOrigin = rigidbody2D.position + new Vector2(0, -0.6f);
+                RaycastHit2D[] snapValidationHit = new RaycastHit2D[1];
+                bool canSnap = false;
+                // Debug.Log("downOrigin: " + downOrigin);
+
+                if (Physics2D.RaycastNonAlloc(downOrigin, Vector2.down, snapValidationHit, 2 * skinWidth) > 0)
+                {
+                    canSnap = snapValidationHit[0].distance <= skinWidth;
+                }
+                if (canSnap)
+                {
+                    if (!isProjectedOnIteration)
+                    {
+                        remainingDirection = remainingDirection.ProjectOnPlane(snapNormal.normalized).normalized;
+                    }
+
+                    // Debug.Log("downOrigin: " + downOrigin + " -  :" + downOrigin);
+                    // Debug.DrawRay(downOrigin, snapValidationHit[0].distance * Vector2.down, Color.red);
+                    accumulatedVelocity += snapVector;
+                    rigidbody2D.position += snapVector;
+                }
 
                 Debug.DrawRay(rigidbody2D.position, remainingDirection * 2f);
             }
 
+            isProjectedOnIteration = false;
             if (rigidbody2D.Cast(remainingDirection, contactFilter2D, castHit, remainingSpeed + skinWidth) > 0)
             {
                 Vector2 velocityTillContact = Mathf.Max(0, castHit[0].distance - skinWidth) * remainingDirection;
@@ -80,20 +106,15 @@ public static class CollideAndSlide
                 foreach (var hit in castHit)
                 {
                     hitAngle = Vector2.Dot(hit.normal, Vector2.up);
-                    castNormal += 
-                    hitAngle < Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad) && hitAngle > 0 ?
-                    Vector2.zero :
-                    hit.normal;
+                    if (hitAngle < Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad) && hitAngle <= 0) continue;
+                    castNormal += hit.normal;
+                    rigidbody2D.SendMessage("OnPhysicsCollision2D", hit.collider);
                 }
                 if (castNormal != Vector2.zero)
                     remainingDirection = remainingDirection.ProjectOnPlane(castNormal.normalized).normalized;
                 accumulatedVelocity += velocityTillContact;
                 rigidbody2D.position += velocityTillContact;
                 isProjectedOnIteration = true;
-            }
-            else
-            {
-                isProjectedOnIteration = false;
             }
 
             if (!isProjectedOnIteration)
@@ -104,7 +125,7 @@ public static class CollideAndSlide
         }
         rigidbody2D.MovePosition(initialPosition + accumulatedVelocity);
     }
-    
+
     public static void Slide(this Rigidbody rigidbody, Vector3 velocity, float skinWidth = 0.08f, float maxIterations = 3)
     {
         Vector3 initialPosition = rigidbody.position;
@@ -226,7 +247,7 @@ public static class CollideAndSlide
         if (planeNormal == Vector2.zero) return vector;
         return vector - Vector2.Dot(vector, planeNormal) * planeNormal;
     }
-    
+
     // public static Vector2 ProjectOnPlane(this Vector2 vector, Vector2 planeNormal)
     // {
     //     // Asegúrate de que la normal no sea un vector cero para evitar divisiones por cero.

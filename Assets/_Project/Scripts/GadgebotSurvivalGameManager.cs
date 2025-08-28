@@ -6,8 +6,8 @@ using UnityEngine.Events;
 public class GadgebotSurvivalGameManager : MonoBehaviour
 {
 	public GadgebotSurvivalGameLoader loader;
-	public GadgebotSpawner spawner;
-	public GadgebotGoal goal;
+	public GadgebotSurvivalSpawner spawner;
+	public GadgebotSurvivalGoal goal;
 	public NavigationManager navManager;
 	public bool startGameOnStart;
 	public bool gameRunning { get; private set; }
@@ -84,7 +84,7 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 
 	void CheckLose()
 	{
-		if (!gameRunning || navManager.selectables.Count != 0) return;
+		if (!gameRunning || navManager.selectables.Count != 0 || spawner.count != 0) return;
 		gameRunning = false;
 		onLose?.Invoke();
 		// OnGameEnd();

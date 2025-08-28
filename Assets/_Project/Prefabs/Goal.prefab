@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4600080736962602}
   - component: {fileID: 1711527624657250666}
   - component: {fileID: 793661711}
-  m_Layer: 0
+  m_Layer: 4
   m_Name: Goal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46e9f9afb54f78d4fb964e360de83d65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _count: 3
+  _count: 0
   onReachedGoal:
     m_PersistentCalls:
       m_Calls: []
@@ -274,7 +274,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 3
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2ef94333e05c2a84bb6c695c2734d32c, type: 2}
   m_sharedMaterial: {fileID: 4652937507250947637, guid: 2ef94333e05c2a84bb6c695c2734d32c,
@@ -362,5 +362,5 @@ MonoBehaviour:
   normalColor: {r: 1, g: 0.051443864, b: 0.042452812, a: 1}
   oneColor: {r: 1, g: 0.051443864, b: 0.042452812, a: 1}
   zeroColor: {r: 1, g: 0.051443864, b: 0.042452812, a: 1}
-  outlineColorFactor: 0.5
+  outlineColorFactor: 0.4
   label: {fileID: 8143652552762135913}
