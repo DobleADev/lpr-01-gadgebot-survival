@@ -163,6 +163,8 @@ public class NavigationCursor : MonoBehaviour
         rayColor = Color.red;
         Gadgebot gadgebot = collider.GetComponent<Gadgebot>();
         if (gadgebot != null) rayColor = Color.green;
+
+        if (!gadgebot.canSelect) return null;
         // Debug.DrawRay(origin, Vector3.forward * 100f, rayColor);
         return gadgebot;
     }

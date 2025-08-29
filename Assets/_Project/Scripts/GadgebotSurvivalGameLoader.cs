@@ -14,6 +14,7 @@ public class GadgebotSurvivalGameLoader : ScriptableObject
     public bool onLoading { get; private set; }
     public event Action onGameLoadStart;
     public event Action onGameLoadEnd;
+    public event Action onGameUnloaded;
 
     [Serializable]
     public struct LevelDependencies
@@ -98,9 +99,10 @@ public class GadgebotSurvivalGameLoader : ScriptableObject
         
     }
 
-    public void OnGameExit()
+    public void UnloadGame()
     {
         gameManager.StartCoroutine(UnloadGameScenes());
+        onGameUnloaded?.Invoke();
     }
 
     IEnumerator UnloadGameScenes()
@@ -114,12 +116,12 @@ public class GadgebotSurvivalGameLoader : ScriptableObject
 
                 asyncUnload.completed += (AsyncOperation operation) =>
                 {
-                    Debug.Log(sceneToUnload + " has been unloaded.");
+                    // Debug.Log(sceneToUnload + " has been unloaded.");
                 };
             }
             else
             {
-                Debug.Log(sceneToUnload + " is not currently loaded.");
+                // Debug.Log(sceneToUnload + " is not currently loaded.");
             }
             loadedGameScenes.RemoveAt(i);
             yield return null;

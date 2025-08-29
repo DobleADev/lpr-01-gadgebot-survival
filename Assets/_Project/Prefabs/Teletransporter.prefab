@@ -61,8 +61,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 9032466928669515121}
+  - {fileID: 7545575730544238281}
   m_Father: {fileID: 9031537676947081961}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!60 &9032466928427846607
 PolygonCollider2D:
@@ -284,6 +285,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 9032466927746979072}
+  - {fileID: 5313426901656613606}
   - {fileID: 9032466928427846609}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -300,9 +302,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb842ca5d9d33441bd7f261d2ba9f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teletransportationDuration: 3
+  teletransportationDuration: 2.6
   endPointOffset: {x: 0, y: 0.7, z: 0}
   endPoint: {fileID: 9032466928427846609}
+  teleportTransitionDuration: 1.4
+  onTeleportRequested:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5313426901656613625}
+        m_MethodName: SnapToGadgebot
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onTeleportStart:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5313426901656613625}
+        m_MethodName: DoDissappearTransition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onTeleportEnd:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7545575730544238294}
+        m_MethodName: DoAppearTransition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onTeletransportation: 0
 --- !u!60 &9032466929365445652
 PolygonCollider2D:
@@ -440,3 +485,177 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!1001 &6735285793205753342
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 9032466928427846609}
+    m_Modifications:
+    - target: {fileID: 3877546057947040566, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_Name
+      value: END Gadgebot Transition VFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 22c40743b9942524e966fd4e3b741bc7, type: 3}
+--- !u!4 &7545575730544238281 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+    type: 3}
+  m_PrefabInstance: {fileID: 6735285793205753342}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7545575730544238294 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3877546057947040552, guid: 22c40743b9942524e966fd4e3b741bc7,
+    type: 3}
+  m_PrefabInstance: {fileID: 6735285793205753342}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2aef82a0c9cd2aa498172018c45da7b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1001 &8967469527304075729
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 9031537676947081961}
+    m_Modifications:
+    - target: {fileID: 3877546057947040566, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_Name
+      value: START Gadgebot Transition VFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 22c40743b9942524e966fd4e3b741bc7, type: 3}
+--- !u!4 &5313426901656613606 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3877546057947040567, guid: 22c40743b9942524e966fd4e3b741bc7,
+    type: 3}
+  m_PrefabInstance: {fileID: 8967469527304075729}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5313426901656613625 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3877546057947040552, guid: 22c40743b9942524e966fd4e3b741bc7,
+    type: 3}
+  m_PrefabInstance: {fileID: 8967469527304075729}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2aef82a0c9cd2aa498172018c45da7b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

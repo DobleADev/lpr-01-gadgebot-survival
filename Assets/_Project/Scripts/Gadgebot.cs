@@ -21,16 +21,20 @@ public class Gadgebot : MonoBehaviour
 	public Vector2 fallVelocity;
 	public bool isGrounded;
 	public Collider2D ground;
+	public float walkDelayAfterGround = 0.3f;
 	public int direction = 1;
 	public bool walk = true;
 	public bool physicsEnabled = true;
+	public bool canSelect = true;
 	public LayerMask groundLayer = 1;
 	public GadgebotUnityEvent onDestroy;
 	MaterialPropertyBlock lightProperty;
+	float timeAfterGrounded;
 
 	void Awake()
 	{
 		lightProperty = new MaterialPropertyBlock();
+		timeAfterGrounded = walkDelayAfterGround;
 	}
 
 	void Start()
@@ -104,6 +108,12 @@ public class Gadgebot : MonoBehaviour
 		// ground = Physics2D.OverlapBox(physics.position + new Vector2(0, -0.45f), new Vector2(boxCollider.size.x, 0.1f), 0, groundLayer);
 		// isGrounded = ground != null;
 		Vector2 movement = Vector2.zero;
+		
+		Collider2D groundCollider = Physics2D.OverlapBox(physics.position + new Vector2(0, -0.48f), new Vector2(boxCollider.size.x, 0.01f), 0);
+		if (isGrounded = groundCollider != null)
+		{
+			ground = (1 << groundCollider.gameObject.layer) == groundLayer ? groundCollider : null;
+		}
 
 		if (isGrounded)
 		{
@@ -111,12 +121,18 @@ public class Gadgebot : MonoBehaviour
 			// {
 			// 	direction = directionBlock.direction;
 			// }
-			if (walk) movement = direction * Vector2.right * speed;
+			if (timeAfterGrounded >= walkDelayAfterGround)
+			{
+				if (walk) movement = direction * Vector2.right * speed;
+			}
+			else timeAfterGrounded += Time.deltaTime;
+
 			if (fallVelocity.y < -fallSpeedDeathThreshold) Destroy(gameObject);
 			fallVelocity = Vector2.zero;
 		}
 		else
 		{
+			timeAfterGrounded = 0;
 			movement = fallVelocity;
 			fallVelocity += Time.deltaTime * Physics2D.gravity * gravityScale;
 			fallVelocity = Vector2.ClampMagnitude(fallVelocity, maxFallSpeed);
@@ -124,12 +140,6 @@ public class Gadgebot : MonoBehaviour
 
 		// physics.Slide(Time.deltaTime * movement, 0.08f, 2);
 		physics.Walk(Time.deltaTime * movement, 45, 0.08f, 2, 1);
-
-		Collider2D groundCollider = Physics2D.OverlapBox(physics.position + new Vector2(0, -0.48f), new Vector2(boxCollider.size.x, 0.01f), 0);
-		if (isGrounded = groundCollider != null)
-		{
-			ground = (1 << groundCollider.gameObject.layer) == groundLayer ? groundCollider : null;
-		}
 	}
 
 	void ChangeLightColor(Color color)
@@ -232,33 +242,34 @@ public class GadgebotElectrifyCommand : GadgebotState
 	// public override void OnCommandEnter(Gadgebot gadgebot) {}
 	// public override void OnCommandExit(Gadgebot gadgebot) {}
 	// public override void FixedUpdate(Gadgebot gadgebot) {}
-	bool onTeletransportation;
+	public bool onTeletransportation { get; set; }
 	public override void OnTriggerStay2D(Gadgebot gadgebot, Collider2D other)
 	{
 		if (other.TryGetComponent(out GadgebotSurvivalTeletransporter teletransporter))
 		{
-			RequestTeleport(gadgebot, teletransporter);
+			// RequestTeleport(gadgebot, teletransporter);
+			teletransporter.RequestTeleport(gadgebot, this);
 		}
 	}
 	
-	void RequestTeleport(Gadgebot gadgebot, GadgebotSurvivalTeletransporter teletransporter)
-    {
-        if (teletransporter.onTeletransportation) return;
-        gadgebot.StartCoroutine(TeletransportationProcess(gadgebot, teletransporter));
-    }
+	// void RequestTeleport(Gadgebot gadgebot, GadgebotSurvivalTeletransporter teletransporter)
+    // {
+    //     if (teletransporter.onTeletransportation) return;
+    //     gadgebot.StartCoroutine(TeletransportationProcess(gadgebot, teletransporter));
+    // }
 
-	IEnumerator TeletransportationProcess(Gadgebot gadgebot, GadgebotSurvivalTeletransporter teletransporter)
-	{
-		teletransporter.onTeletransportation = true;
-		gadgebot.walk = false;
-		onTeletransportation = true;
-		yield return new WaitForSeconds(teletransporter.teletransportationDuration);
-		gadgebot.transform.position = teletransporter.endPoint.TransformPoint(teletransporter.endPointOffset);
-		teletransporter.onTeletransportation = false;
-		gadgebot.walk = true;
-		onTeletransportation = false;
-		gadgebot.RequestDefaultCommand();
-    }
+	// IEnumerator TeletransportationProcess(Gadgebot gadgebot, GadgebotSurvivalTeletransporter teletransporter)
+	// {
+	// 	teletransporter.onTeletransportation = true;
+	// 	gadgebot.walk = false;
+	// 	onTeletransportation = true;
+	// 	yield return new WaitForSeconds(teletransporter.teletransportationDuration);
+	// 	gadgebot.transform.position = teletransporter.endPoint.TransformPoint(teletransporter.endPointOffset);
+	// 	teletransporter.onTeletransportation = false;
+	// 	gadgebot.walk = true;
+	// 	onTeletransportation = false;
+	// 	gadgebot.RequestDefaultCommand();
+    // }
 	// public override void OnDrawGizmos(Gadgebot gadgebot) {}
 	public override bool CanChangeCommand(Gadgebot gadgebot) { return !onTeletransportation; }
 }
@@ -275,16 +286,17 @@ public class GadgebotBridgeCommand : GadgebotState
 	{
 		if (triggered) return;
 
-		if (gadgebot.isGrounded && gadgebot.fallVelocity.y == 0 && !Physics2D.OverlapPoint((Vector2)gadgebot.transform.position + new Vector2(0, -0.6f), gadgebot.groundLayer))
+		if (gadgebot.isGrounded && gadgebot.ground && gadgebot.fallVelocity.y == 0 && !Physics2D.OverlapPoint((Vector2)gadgebot.transform.position + new Vector2(0, -0.6f), gadgebot.groundLayer))
 		{
 			triggered = true;
-			gadgebot.physicsEnabled = false;
 			gadgebot.StartCoroutine(GoBridge(gadgebot));
 		}
 	}
 
 	IEnumerator GoBridge(Gadgebot gadgebot)
 	{
+		gadgebot.physicsEnabled = false;
+		gadgebot.canSelect = false;
 		Collider2D lastGround = gadgebot.ground;
 		Transform gadgebotTransform = gadgebot.transform;
 		Vector2 initialPosition = gadgebotTransform.position;
@@ -301,7 +313,8 @@ public class GadgebotBridgeCommand : GadgebotState
 		}
 		gadgebotTransform.position = endPosition;
 		// gadgebot.boxCollider.enabled = false;
-		gadgebot.TryInstantiate(bridgeBlockPrefab, endPosition, Quaternion.identity);
+		var block = gadgebot.TryInstantiate(bridgeBlockPrefab, endPosition, Quaternion.identity);
+		UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(block, gadgebot.gameObject.scene);
 		gadgebot.TryDestroyGameObject(gadgebot);
 	}
 

@@ -500,7 +500,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loader: {fileID: 11400000, guid: 92b0636d98ba5a1499a014a88b57295e, type: 2}
-  level: {fileID: 11400000, guid: 69d8e4c8ecce24745a65beef76b61717, type: 2}
+  level: {fileID: 11400000, guid: c45690ffc4f3b564d97c0d737298d8c9, type: 2}
+  startOnAwake: 0
+  onGameLoadStart:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1868040503}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onGameLoadEnd:
+    m_PersistentCalls:
+      m_Calls: []
+  onGameUnload:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1868040503}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 502836094}
+        m_MethodName: ResetCursor
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!4 &502836095
 Transform:
   m_ObjectHideFlags: 0
@@ -594,7 +637,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4302837769588340, guid: 5cf156f05ef174542a0d4c595118349c, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4302837769588340, guid: 5cf156f05ef174542a0d4c595118349c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -662,7 +705,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &650510317
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1287,26 +1330,15 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 11400000, guid: 92b0636d98ba5a1499a014a88b57295e, type: 2}
-        m_MethodName: Play
-        m_Mode: 5
+      - m_Target: {fileID: 502836094}
+        m_MethodName: StartTest
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: gadgebot-survival-level-2
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 2039734137}
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1868040506
@@ -1497,7 +1529,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2039734137}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 

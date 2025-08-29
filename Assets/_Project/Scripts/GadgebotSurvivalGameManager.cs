@@ -28,7 +28,8 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 
 	void OnDestroy()
 	{
-		if (loader != null && gameRunning) loader.Reset();
+		if (!gameRunning) return;
+		if (loader != null) loader.Reset();
 		goal.onCountUpdated.RemoveListener(CheckWin);
 		goal.onCountUpdated.RemoveListener((count) => CheckLose());
 		spawner.onSpawn.RemoveListener(OnGadgebotSpawned);
@@ -73,13 +74,16 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 		StartCoroutine(SpawnLoop());
 	}
 
+	public void QuitGame()
+	{
+		loader.UnloadGame();
+	}
+
 	void CheckWin(int count)
 	{
 		if (!gameRunning || count != 0) return;
 		gameRunning = false;
 		onWin?.Invoke();
-		// OnGameEnd();
-		// loader.OnGameExit();
 	}
 
 	void CheckLose()
@@ -87,8 +91,6 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 		if (!gameRunning || navManager.selectables.Count != 0 || spawner.count != 0) return;
 		gameRunning = false;
 		onLose?.Invoke();
-		// OnGameEnd();
-		// loader.OnGameExit();
 	}
 	
 }

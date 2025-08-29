@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/gadgebot-survival-level-2.unity
     guid: 7832bfdc4c0512d48bdb95295aeb573c
+  - enabled: 1
+    path: Assets/_Project/Scenes/gadgebot-survival-level-9.unity
+    guid: e57fb9ba255d24544bf84c59bbd1aa64
   m_configObjects: {}

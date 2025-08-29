@@ -122,7 +122,11 @@ public class NavigationManager : MonoBehaviour
         }
         else
         {
-            if (reticle.cursorVectorOnSelected.magnitude > distanceToDeselect)
+            if (!reticle.selectableSelected.gadgebot.canSelect)
+            {
+                UpdateCurrentSelectable(null);
+            }
+            else if (reticle.cursorVectorOnSelected.magnitude > distanceToDeselect)
             {
                 Vector3 direction = reticle.cursorVectorOnSelected.normalized;
                 reticle.position += onDeselectCursorOffset * direction;

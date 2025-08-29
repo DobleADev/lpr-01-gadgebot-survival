@@ -11,9 +11,12 @@ public class NavigationSelectable : Selectable
     public UnityEvent onSelected;
     public UnityEvent onExited;
     bool isSelected = false;
+    Navigation selectableProperty;
 
     public void KeepInGadgebot(Camera gameCamera)
     {
+        selectableProperty.mode = gadgebot.canSelect ? Navigation.Mode.Automatic : Navigation.Mode.None;
+        navigation = selectableProperty;
         Vector2 gadgebotScreenPosition = gameCamera.WorldToScreenPoint(gadgebot.transform.position);
         transform.position = gadgebotScreenPosition;
     }
