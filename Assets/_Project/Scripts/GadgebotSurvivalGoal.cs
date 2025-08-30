@@ -22,7 +22,7 @@ public class GadgebotSurvivalGoal : MonoBehaviour
     public GadgebotUnityEvent onReachedGoal;
     public IntUnityEvent onCountUpdated;
 
-    public void OnInteract(Gadgebot gadgebot)
+    public void OnInteract(GadgebotSurvivalGadgebotController gadgebot)
     {
         onReachedGoal?.Invoke(gadgebot);
         Destroy(gadgebot.gameObject);

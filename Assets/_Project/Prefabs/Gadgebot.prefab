@@ -128,40 +128,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2321fcdd55f8234b9c860ccc977bdb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _properties: {fileID: 11400000, guid: e049d59214c08e446a9ad345c38896dd, type: 2}
   physics: {fileID: 50091841157774126}
   boxCollider: {fileID: 61559063345470714}
   lightRenderer: {fileID: 5170623973620278568}
-  followCommand:
-    _lightColor: {r: 0.09854245, g: 1, b: 0, a: 1}
-  swingCommand:
-    _lightColor: {r: 1, g: 1, b: 1, a: 1}
-  electrifyCommand:
-    _lightColor: {r: 0, g: 0.95081973, b: 1, a: 1}
-  bridgeCommand:
-    _lightColor: {r: 0.98312235, g: 0, b: 1, a: 1}
-    bridgeBlockPrefab: {fileID: 6222878110342831697, guid: 53684c4a8b43e2a44837678b9b8f8c3f,
-      type: 3}
-    jumpMaxApex: 1
-    jumpDuration: 1
-    triggered: 0
-  detonateCommand:
-    _lightColor: {r: 1, g: 0.442751, b: 0, a: 1}
-    detonationBuildUpSeconds: 2
-  speed: 1
-  gravityScale: 1
-  maxFallSpeed: 10
-  fallSpeedDeathThreshold: 8.5
-  fallVelocity: {x: 0, y: 0}
-  isGrounded: 1
-  ground: {fileID: 0}
-  walkDelayAfterGround: 0.3
   direction: 1
   walk: 1
   physicsEnabled: 1
-  canChangeCommand: 1
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 1
+  canSelect: 1
   onDestroy:
     m_PersistentCalls:
       m_Calls: []

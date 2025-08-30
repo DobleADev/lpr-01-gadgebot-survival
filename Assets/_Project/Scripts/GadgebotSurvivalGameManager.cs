@@ -35,13 +35,13 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 		spawner.onSpawn.RemoveListener(OnGadgebotSpawned);
 	}
 
-	void OnGadgebotSpawned(Gadgebot gadgebot)
+	void OnGadgebotSpawned(GadgebotSurvivalGadgebotController gadgebot)
 	{
 		gadgebot.onDestroy.AddListener(OnGadgebotDestroy);
 		navManager.AddSelectable(gadgebot);
 	}
 
-	void OnGadgebotDestroy(Gadgebot gadgebot)
+	void OnGadgebotDestroy(GadgebotSurvivalGadgebotController gadgebot)
 	{
 		gadgebot.onDestroy.RemoveListener(OnGadgebotDestroy);
 		navManager.RemoveSelectable(gadgebot);

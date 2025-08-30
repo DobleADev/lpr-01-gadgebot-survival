@@ -146,7 +146,7 @@ public class NavigationCursor : MonoBehaviour
         return gameCamera.WorldToScreenPoint(transform.position);
     }
 
-    public Gadgebot DoGadgebotRaycast()
+    public GadgebotSurvivalGadgebotController DoGadgebotRaycast()
     {
         Color rayColor = Color.gray;
         Vector3 screenPosition = GetScreenPosition();
@@ -161,7 +161,7 @@ public class NavigationCursor : MonoBehaviour
             return null;
         }
         rayColor = Color.red;
-        Gadgebot gadgebot = collider.GetComponent<Gadgebot>();
+        GadgebotSurvivalGadgebotController gadgebot = collider.GetComponent<GadgebotSurvivalGadgebotController>();
         if (gadgebot != null) rayColor = Color.green;
 
         if (!gadgebot.canSelect) return null;

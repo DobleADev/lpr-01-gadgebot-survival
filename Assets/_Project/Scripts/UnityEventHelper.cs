@@ -8,7 +8,7 @@ using System;
 public class GameObjectUnityEvent : UnityEvent<GameObject> { }
 
 [Serializable]
-public class GadgebotUnityEvent : UnityEvent<Gadgebot> { }
+public class GadgebotUnityEvent : UnityEvent<GadgebotSurvivalGadgebotController> { }
 [Serializable]
 public class GadgebotCommandOptionUnityEvent : UnityEvent<GadgebotCommandOption> { }
 

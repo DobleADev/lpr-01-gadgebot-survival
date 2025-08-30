@@ -6,7 +6,7 @@ using UnityEngine.Events;
 [ExecuteInEditMode]
 public class GadgebotSurvivalSpawner : MonoBehaviour
 {
-	public Gadgebot prefab;
+	public GadgebotSurvivalGadgebotController prefab;
 	public Vector3 spawnOrigin;
 	public float spawnDelay = 1;
 	[SerializeField, Min(0)] private int _count = 3;

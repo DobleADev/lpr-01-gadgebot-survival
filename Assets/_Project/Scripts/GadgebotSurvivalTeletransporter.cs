@@ -13,18 +13,18 @@ public class GadgebotSurvivalTeletransporter : MonoBehaviour
     public UnityEvent onTeleportStart;
     public UnityEvent onTeleportEnd;
     public bool onTeletransportation;
-    public void RequestTeleport(Gadgebot gadgebot, GadgebotElectrifyCommand electrifyCommand)
+    public void RequestTeleport(GadgebotSurvivalGadgebotController gadgebot)
     {
         if (onTeletransportation) return;
         onTeleportRequested?.Invoke(gadgebot);
-        StartCoroutine(TeletransportationProcess(gadgebot, electrifyCommand));
+        StartCoroutine(TeletransportationProcess(gadgebot));
     }
 
-    IEnumerator TeletransportationProcess(Gadgebot gadgebot, GadgebotElectrifyCommand electrifyCommand)
+    IEnumerator TeletransportationProcess(GadgebotSurvivalGadgebotController gadgebot)
     {
         onTeletransportation = true;
 		gadgebot.walk = false;
-		electrifyCommand.onTeletransportation = true;
+		gadgebot.onTeletransportation = true;
 
 		yield return new WaitForSeconds(teletransportationDuration);
 
@@ -39,7 +39,7 @@ public class GadgebotSurvivalTeletransporter : MonoBehaviour
         gadgebot.gameObject.SetActive(true);
 		gadgebot.transform.position = endPoint.TransformPoint(endPointOffset);
 		gadgebot.walk = true;
-		electrifyCommand.onTeletransportation = false;
+		gadgebot.onTeletransportation = false;
 		gadgebot.RequestDefaultCommand();
     }
 

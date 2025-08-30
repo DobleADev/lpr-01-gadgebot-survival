@@ -113,7 +113,7 @@ public class RadialMenu : MonoBehaviour
         {
             selectionTime = selectionTimer; 
             itemSelected.OnSelect();
-            selectedLabel.text = options[System.Array.IndexOf(uiOptions, itemSelected)].command;
+            selectedLabel.text = options[System.Array.IndexOf(uiOptions, itemSelected)].command.ToString();
         }
         else
         {

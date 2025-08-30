@@ -15,7 +15,7 @@ public class NavigationManager : MonoBehaviour
     public float distanceToDeselect = 1;
     public float onDeselectCursorOffset = 1f;
     public List<NavigationSelectable> selectables = new List<NavigationSelectable>();
-    public NavigationSelectable GetSelectableByGadgebot(Gadgebot gadgebot) => selectables.Where(s => s.gadgebot == gadgebot).FirstOrDefault();
+    public NavigationSelectable GetSelectableByGadgebot(GadgebotSurvivalGadgebotController gadgebot) => selectables.Where(s => s.gadgebot == gadgebot).FirstOrDefault();
 
     void Awake()
     {
@@ -39,7 +39,7 @@ public class NavigationManager : MonoBehaviour
         // EventSystem.current.sendNavigationEvents = false;
     }
 
-    public void AddSelectable(Gadgebot gadgebot)
+    public void AddSelectable(GadgebotSurvivalGadgebotController gadgebot)
     {
         var newSelectable = Instantiate(prefab, transform);
         // gadgebot.onDestroy.AddListener(RemoveSelectable);
@@ -51,7 +51,7 @@ public class NavigationManager : MonoBehaviour
 
     }
 
-    public void RemoveSelectable(Gadgebot gadgebot)
+    public void RemoveSelectable(GadgebotSurvivalGadgebotController gadgebot)
     {
         // gadgebot.onDestroy.RemoveListener(RemoveSelectable);
         var selectableToRemove = GetSelectableByGadgebot(gadgebot);

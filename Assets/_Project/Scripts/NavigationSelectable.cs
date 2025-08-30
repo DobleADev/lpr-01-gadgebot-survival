@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 public class NavigationSelectable : Selectable
 {
-    public Gadgebot gadgebot;
+    public GadgebotSurvivalGadgebotController gadgebot;
     public UnityEvent onSelected;
     public UnityEvent onExited;
     bool isSelected = false;

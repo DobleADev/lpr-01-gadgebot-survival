@@ -14,7 +14,7 @@ public class GadgebotSurvivalVFXGadgebotTransition : MonoBehaviour
     [SerializeField] float appearScaleStartDuration = 0.2f;
     Coroutine transitionRoutine;
 
-    public void SnapToGadgebot(Gadgebot gadgebot)
+    public void SnapToGadgebot(GadgebotSurvivalGadgebotController gadgebot)
     {
         transform.position = gadgebot.transform.position;
     }
