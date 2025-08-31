@@ -12,4 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
   m_Name: Level 1
   m_EditorClassIdentifier: 
-  _levelName: gadgebot-survival-level-1
+  _values:
+    name: gadgebot-survival-level-1
+    description: 
+    winPrize: 0
+    sceneName: gadgebot-survival-level-1
+    spawnCount: 5
+    goalCount: 3
+    spawnInterval: 3.7

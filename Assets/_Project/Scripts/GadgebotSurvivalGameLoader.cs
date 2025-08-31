@@ -9,74 +9,20 @@ public class GadgebotSurvivalGameLoader : ScriptableObject
 {
     [SerializeField] string setupSceneName = "gadgebot-survival-setup";
     private GadgebotSurvivalGameManager gameManager;
-    private LevelDependencies levelDependencies;
+    private GadgebotSurvivalLevelManager levelManager;
+    private GadgebotSurvivalLevelData levelData;
+    // private LevelDependencies levelDependencies;
     private List<string> loadedGameScenes = new List<string>();
     public bool onLoading { get; private set; }
     public event Action onGameLoadStart;
     public event Action onGameLoadEnd;
     public event Action onGameUnloaded;
 
-    [Serializable]
-    public struct LevelDependencies
-    {
-        public GadgebotSurvivalSpawner GadgebotSurvivalSpawner { get; private set; }
-        public GadgebotSurvivalGoal GadgebotSurvivalGoal { get; private set; }
-        public LevelDependencies(GadgebotSurvivalSpawner spawner, GadgebotSurvivalGoal goal)
-        {
-            GadgebotSurvivalSpawner = spawner;
-            GadgebotSurvivalGoal = goal;
-        }
-
-        public void CleanDependencies()
-        {
-            GadgebotSurvivalSpawner = null;
-            GadgebotSurvivalGoal = null;
-        }
-    }
-
-    [ContextMenu("Reset Properties")]
-    public void Reset()
-    {
-        onLoading = false;
-        loadedGameScenes.Clear();
-    }
-
+    
     bool IsGameRunning()
     {
         if (gameManager == null) return false;
         return gameManager.gameRunning;
-    }
-
-    void CancelLoading()
-    {
-        Reset();
-    }
-
-    public void Play(string levelName)
-    {
-        if (IsGameRunning() || onLoading) return;
-        onLoading = true;
-        onGameLoadStart?.Invoke();
-
-        SceneManager.LoadScene(setupSceneName, LoadSceneMode.Additive);
-        loadedGameScenes.Add(setupSceneName);
-        SceneManager.LoadScene(levelName, LoadSceneMode.Additive);
-        loadedGameScenes.Add(levelName);
-        
-    }
-
-    public void OnSetupLoaded(GadgebotSurvivalGameManager gameManager)
-    {
-        if (!onLoading) return;
-        this.gameManager = gameManager;
-        ValidateGameStartup();
-    }
-
-    public void OnLevelLoaded(LevelDependencies levelDependencies)
-    {
-        if (!onLoading) return;
-        this.levelDependencies = levelDependencies;
-        ValidateGameStartup();
     }
 
     void ValidateGameStartup()
@@ -84,25 +30,17 @@ public class GadgebotSurvivalGameLoader : ScriptableObject
         if (
             gameManager == null
             ||
-            levelDependencies.GadgebotSurvivalSpawner == null
-            ||
-            levelDependencies.GadgebotSurvivalGoal == null
+            levelManager == null
         )
         {
             return;
         }
-        gameManager.spawner = levelDependencies.GadgebotSurvivalSpawner;
-        gameManager.goal = levelDependencies.GadgebotSurvivalGoal;
+        levelManager.InitLevel(levelData);
+        gameManager.InitGame(levelManager);
         gameManager.StartGame();
         onLoading = false;
         onGameLoadEnd?.Invoke();
         
-    }
-
-    public void UnloadGame()
-    {
-        gameManager.StartCoroutine(UnloadGameScenes());
-        onGameUnloaded?.Invoke();
     }
 
     IEnumerator UnloadGameScenes()
@@ -133,6 +71,47 @@ public class GadgebotSurvivalGameLoader : ScriptableObject
     void CleanDependencies()
     {
         gameManager = null;
-        levelDependencies.CleanDependencies();
+        levelManager = null;
+        levelData = null;
+    }
+
+    public void Play(GadgebotSurvivalLevelData gadgebotSurvivalLevel)
+    {
+        if (IsGameRunning() || onLoading) return;
+        onLoading = true;
+        onGameLoadStart?.Invoke();
+
+        SceneManager.LoadScene(setupSceneName, LoadSceneMode.Additive);
+        loadedGameScenes.Add(setupSceneName);
+        SceneManager.LoadScene(gadgebotSurvivalLevel.values.sceneName, LoadSceneMode.Additive);
+        loadedGameScenes.Add(gadgebotSurvivalLevel.values.sceneName);
+        levelData = gadgebotSurvivalLevel;
+    }
+
+    public void OnSetupLoaded(GadgebotSurvivalGameManager gameManager)
+    {
+        if (!onLoading) return;
+        this.gameManager = gameManager;
+        ValidateGameStartup();
+    }
+
+    public void OnLevelLoaded(GadgebotSurvivalLevelManager levelManager)
+    {
+        if (!onLoading) return;
+        this.levelManager = levelManager;
+        ValidateGameStartup();
+    }
+
+    public void UnloadGame()
+    {
+        gameManager.StartCoroutine(UnloadGameScenes());
+        onGameUnloaded?.Invoke();
+    }
+
+    [ContextMenu("Reset Properties")]
+    public void Reset()
+    {
+        onLoading = false;
+        loadedGameScenes.Clear();
     }
 }

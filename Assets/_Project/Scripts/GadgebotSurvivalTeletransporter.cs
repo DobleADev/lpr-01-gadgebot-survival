@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,21 +11,22 @@ public class GadgebotSurvivalTeletransporter : MonoBehaviour
     public GadgebotUnityEvent onTeleportRequested;
     public UnityEvent onTeleportStart;
     public UnityEvent onTeleportEnd;
-    public bool onTeletransportation;
-    public void RequestTeleport(GadgebotSurvivalGadgebotController gadgebot)
+    public Coroutine process;
+    public bool onTeletransportation { get; private set; }
+    public bool RequestTeleport(GadgebotSurvivalGadgebotController gadgebot)
     {
-        if (onTeletransportation) return;
+        if (onTeletransportation) return false;
         onTeleportRequested?.Invoke(gadgebot);
-        StartCoroutine(TeletransportationProcess(gadgebot));
+        process = StartCoroutine(TeletransportationProcess(gadgebot));
+        return true;
     }
 
     IEnumerator TeletransportationProcess(GadgebotSurvivalGadgebotController gadgebot)
     {
         onTeletransportation = true;
-		gadgebot.walk = false;
-		gadgebot.onTeletransportation = true;
-
+        // Debug.Log("TP WAIT");
 		yield return new WaitForSeconds(teletransportationDuration);
+        // Debug.Log("TP START");
 
         gadgebot.gameObject.SetActive(false);
         onTeleportStart?.Invoke();
@@ -34,13 +34,11 @@ public class GadgebotSurvivalTeletransporter : MonoBehaviour
 
         onTeleportEnd?.Invoke();
 		yield return new WaitForSeconds(teleportTransitionDuration * 0.5f);
+        // Debug.Log("TP END");
 
-        onTeletransportation = false;
         gadgebot.gameObject.SetActive(true);
+        onTeletransportation = false;
 		gadgebot.transform.position = endPoint.TransformPoint(endPointOffset);
-		gadgebot.walk = true;
-		gadgebot.onTeletransportation = false;
-		gadgebot.RequestDefaultCommand();
     }
 
     void OnDrawGizmos()

@@ -10,31 +10,22 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 	[SerializeField] Rigidbody2D physics;
 	[SerializeField] BoxCollider2D boxCollider;
 	[SerializeField] MeshRenderer lightRenderer;
-	// public GadgebotFollowCommand followCommand = new GadgebotFollowCommand();
-	// public GadgebotSwingCommand swingCommand = new GadgebotSwingCommand();
-	// public GadgebotElectrifyCommand electrifyCommand = new GadgebotElectrifyCommand();
-	// public GadgebotBridgeCommand bridgeCommand = new GadgebotBridgeCommand();
-	// public GadgebotDetonateCommand detonateCommand = new GadgebotDetonateCommand();
+	float timeAfterGrounded;
 	GadgebotState currentCommand;
-	// public float speed = 1;
-	// public float gravityScale = 1;
-	// public float maxFallSpeed = 12;
-	// public float fallSpeedDeathThreshold = 8;
-	public Vector2 fallVelocity { get; private set;  }
-	public bool isGrounded { get; private set;  }
+	MaterialPropertyBlock lightProperty;
+	public Vector2 fallVelocity { get; private set; }
+	public bool isGrounded { get; private set; }
 	public Collider2D ground { get; private set;  }
-	public bool onTeletransportation { get; set; }
+	public bool onTeletransportation { get; private set; }
 	public bool bridgeActivated { get; private set; }
 	// public float walkDelayAfterGround = 0.3f;
-	public int direction = 1;
-	public bool walk = true;
-	public bool physicsEnabled = true;
-	public bool canSelect = true;
+	public int direction { get; private set; } = 1;
+	public bool walk { get; private set; } = true;
+	public bool physicsEnabled { get; private set; } = true;
+	public bool canSelect { get; private set; } = true;
 	// public LayerMask groundLayer = 1;
 	public GadgebotUnityEvent onDestroy;
-	MaterialPropertyBlock lightProperty;
 	public Coroutine detonateCoroutine { get; private set; }
-	float timeAfterGrounded;
 
 	void Awake()
 	{
@@ -113,11 +104,14 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 		// ground = Physics2D.OverlapBox(physics.position + new Vector2(0, -0.45f), new Vector2(boxCollider.size.x, 0.1f), 0, groundLayer);
 		// isGrounded = ground != null;
 		Vector2 movement = Vector2.zero;
-		
-		Collider2D groundCollider = Physics2D.OverlapBox(physics.position + new Vector2(0, -0.48f), new Vector2(boxCollider.size.x, 0.01f), 0);
-		if (isGrounded = groundCollider != null)
+
+		Collider2D[] groundCollider = new Collider2D[1];
+		ContactFilter2D groundFilter = new ContactFilter2D();
+		groundFilter.useTriggers = false;
+		isGrounded = Physics2D.OverlapBox(physics.position + new Vector2(0, -0.48f), new Vector2(boxCollider.size.x, 0.01f), 0, groundFilter, groundCollider) > 0;
+		if (isGrounded)
 		{
-			ground = (1 << groundCollider.gameObject.layer) == properties.groundLayer ? groundCollider : null;
+			ground = (1 << groundCollider[0].gameObject.layer) == properties.groundLayer ? groundCollider[0] : null;
 		}
 
 		if (isGrounded)
@@ -229,14 +223,40 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 		return Instantiate(component, position, rotation);
 	}
 
-	public void RequestDefaultCommand()
-	{
-		ChangeCommandState(properties.followCommand);
-	}
+	// public void RequestDefaultCommand()
+	// {
+	// 	ChangeCommandState(properties.followCommand);
+	// }
 
 	public void StartDetonation(GadgebotDetonateCommand detonateCommand)
 	{
 		detonateCoroutine = StartCoroutine(ExplosionProcess(detonateCommand));
+		walk = false;
+	}
+
+	public void CancelDetonation()
+	{
+		if (detonateCoroutine != null) StopCoroutine(detonateCoroutine);
+		walk = true;
+	}
+
+	public IEnumerator TeletransportationProcess(GadgebotSurvivalTeletransporter teletransporter)
+	{
+		// Debug.Log("Local Wait Started " + Time.time);
+		walk = false;
+		onTeletransportation = true;
+
+		// yield return teletransporter.process;
+		while (teletransporter.onTeletransportation)
+		{
+			// Debug.Log("Waiting for teleport end.. " + Time.time);
+			yield return null;
+		}
+		// Debug.Log("Teleport end " + Time.time);
+		walk = true;
+		onTeletransportation = false;
+		ChangeCommandState(properties.followCommand);
+		
 	}
 
 	IEnumerator ExplosionProcess(GadgebotDetonateCommand detonateCommand)
@@ -263,10 +283,6 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 			case GadgebotCommandOption.GadgebotCommands.Electrify: ChangeCommandState(properties.electrifyCommand); break;
 			case GadgebotCommandOption.GadgebotCommands.Bridge: ChangeCommandState(properties.bridgeCommand); break;
 			case GadgebotCommandOption.GadgebotCommands.Detonate: ChangeCommandState(properties.detonateCommand); break;
-			// case string str when IsLike(str, "swing"): ChangeCommandState(properties.swingCommand); break;
-			// case string str when IsLike(str, "electrify"): ChangeCommandState(properties.electrifyCommand); break;
-			// case string str when IsLike(str, "bridge"): ChangeCommandState(properties.bridgeCommand); break;
-			// case string str when IsLike(str, "detonate"): ChangeCommandState(properties.detonateCommand); break;
 			default: ChangeCommandState(properties.followCommand); break;
 		}
 	}
@@ -297,46 +313,27 @@ public class GadgebotElectrifyCommand : GadgebotState
 	// public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) {}
 	// public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot) {}
 	// public override void FixedUpdate(GadgebotSurvivalGadgebotController gadgebot) {}
-	// public bool onTeletransportation { get; set; }
 	public override void OnTriggerStay2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other)
 	{
 		if (other.TryGetComponent(out GadgebotSurvivalTeletransporter teletransporter))
 		{
 			// RequestTeleport(gadgebot, teletransporter);
-			teletransporter.RequestTeleport(gadgebot);
+			if (!teletransporter.RequestTeleport(gadgebot)) return;
+			teletransporter.StartCoroutine(gadgebot.TeletransportationProcess(teletransporter));
 		}
 	}
-	
-	// void RequestTeleport(GadgebotSurvivalGadgebotController gadgebot, GadgebotSurvivalTeletransporter teletransporter)
-    // {
-    //     if (teletransporter.onTeletransportation) return;
-    //     gadgebot.StartCoroutine(TeletransportationProcess(gadgebot, teletransporter));
-    // }
-
-	// IEnumerator TeletransportationProcess(GadgebotSurvivalGadgebotController gadgebot, GadgebotSurvivalTeletransporter teletransporter)
-	// {
-	// 	teletransporter.onTeletransportation = true;
-	// 	gadgebot.walk = false;
-	// 	onTeletransportation = true;
-	// 	yield return new WaitForSeconds(teletransporter.teletransportationDuration);
-	// 	gadgebot.transform.position = teletransporter.endPoint.TransformPoint(teletransporter.endPointOffset);
-	// 	teletransporter.onTeletransportation = false;
-	// 	gadgebot.walk = true;
-	// 	onTeletransportation = false;
-	// 	gadgebot.RequestDefaultCommand();
-    // }
 	// public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot) {}
 	public override bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return !gadgebot.onTeletransportation; }
 }
 [System.Serializable]
 public class GadgebotBridgeCommand : GadgebotState
 {
-	// public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) {}
-	// public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot) {}
 	public GameObject bridgeBlockPrefab;
 	public float jumpMaxApex = 1;
 	public float jumpDuration = 1;
-	
+	// public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) {}
+	// public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot) {}
+
 	public override void FixedUpdate(GadgebotSurvivalGadgebotController gadgebot)
 	{
 		if (gadgebot.bridgeActivated) return;
@@ -362,14 +359,12 @@ public class GadgebotDetonateCommand : GadgebotState
 
 	public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot)
 	{
-		gadgebot.walk = false;
 		gadgebot.StartDetonation(this);
 	}
 
 	public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot)
 	{
-		if (gadgebot.detonateCoroutine != null) gadgebot.StopCoroutine(gadgebot.detonateCoroutine);
-		gadgebot.walk = true;
+		gadgebot.CancelDetonation();
 	}
 
 	public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot)

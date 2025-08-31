@@ -18,7 +18,7 @@ public class GadgebotSurvivalGameTester : MonoBehaviour
 
     public void StartTest()
     {
-        loader.Play(level.levelName);
+        loader.Play(level);
     }
 
     public void ResetCursor()

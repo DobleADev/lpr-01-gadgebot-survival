@@ -126,6 +126,105 @@ public static class CollideAndSlide
         rigidbody2D.MovePosition(initialPosition + accumulatedVelocity);
     }
 
+    // public static void Walk(this Rigidbody2D rigidbody2D
+    // , Vector2 velocity
+    // , float maxSlopeAngle = 45
+    // , float skinWidth = 0.08f
+    // , int maxIterations = 5
+    // , int accuracy = 3)
+    // {
+    //     Vector2 initialPosition = rigidbody2D.position;
+    //     RaycastHit2D[] castHit = new RaycastHit2D[accuracy];
+    //     RaycastHit2D[] snapHit = new RaycastHit2D[accuracy];
+    //     Vector2 accumulatedVelocity = Vector2.zero;
+    //     float remainingSpeed = velocity.magnitude;
+    //     Vector2 remainingDirection = velocity.normalized, initialDirection = velocity.normalized;
+    //     bool isProjectedOnIteration = false;
+    //     ContactFilter2D contactFilter2D = new ContactFilter2D();
+    //     contactFilter2D.useTriggers = false;
+
+    //     for (int i = 0; i < maxIterations; i++)
+    //     {
+    //         // isProjectedOnIteration = false;
+
+    //         Vector3 walk = remainingSpeed * remainingDirection;
+    //         walk.y = 0;
+
+    //         if (rigidbody2D.Cast(Vector2.down, contactFilter2D, snapHit, walk.magnitude + skinWidth) > 0
+    //         // && Vector2.Dot(remainingDirection, Vector2.down) <= 0
+    //         )
+    //         {
+    //             Vector2 snapVector = Mathf.Max(0, snapHit[0].distance - skinWidth) * Vector2.down;
+    //             Vector2 snapNormal = Vector2.zero;
+    //             foreach (var hit in snapHit) { snapNormal += hit.normal; }
+
+    //             // Vector2 downOrigin = rigidbody2D.ClosestPoint(new Vector2(rigidbody2D.position.x, -Mathf.Infinity)) + new Vector2(0f, -skinWidth);
+    //             // Vector2 downOrigin = rigidbody2D.position + new Vector2(0, -0.6f);
+    //             Vector2 downOrigin = snapHit[0].point + new Vector2(0, 0.02f);
+    //             RaycastHit2D[] snapValidationHit = new RaycastHit2D[1];
+    //             bool canSnap = false;
+    //             // Debug.Log("downOrigin: " + downOrigin);
+
+    //             // float downCheckDistance = skinWidth * remainingSpeed;
+
+    //             if (Physics2D.RaycastNonAlloc(downOrigin, Vector2.down, snapValidationHit, 0.04f) > 0)
+    //             {
+    //                 // canSnap = snapValidationHit[0].distance <= skinWidth + downCheckDistance;
+    //                 canSnap = true;
+    //                 Debug.DrawRay(rigidbody2D.position, 2 * snapValidationHit[0].normal, Color.cyan);
+    //             }
+
+
+
+    //             if (canSnap)
+    //             {
+    //                 if (!isProjectedOnIteration)
+    //                 {
+    //                     remainingDirection = remainingDirection.ProjectOnPlane(snapValidationHit[0].normal).normalized;
+    //                     // remainingDirection = remainingDirection.ProjectOnPlane(snapNormal.normalized).normalized;
+    //                 }
+
+    //                 // Debug.Log("downOrigin: " + downOrigin + " -  :" + downOrigin);
+    //                 // Debug.DrawRay(downOrigin, snapValidationHit[0].distance * Vector2.down, Color.red);
+    //                 accumulatedVelocity += snapVector;
+    //                 rigidbody2D.position += snapVector;
+    //             }
+
+    //             Debug.DrawRay(rigidbody2D.position, remainingDirection * 2f);
+    //         }
+
+    //         if (remainingSpeed < Mathf.Epsilon) break;
+
+    //         isProjectedOnIteration = false;
+    //         if (rigidbody2D.Cast(remainingDirection, contactFilter2D, castHit, remainingSpeed + skinWidth) > 0)
+    //         {
+    //             Vector2 velocityTillContact = Mathf.Max(0, castHit[0].distance - skinWidth) * remainingDirection;
+    //             remainingSpeed = Mathf.Max(0, remainingSpeed - velocityTillContact.magnitude);
+    //             Vector2 castNormal = Vector2.zero;
+    //             float hitAngle;
+    //             foreach (var hit in castHit)
+    //             {
+    //                 hitAngle = Vector2.Dot(hit.normal, Vector2.up);
+    //                 if (hitAngle < Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad) && hitAngle <= 0) continue;
+    //                 castNormal += hit.normal;
+    //                 rigidbody2D.SendMessage("OnPhysicsCollision2D", hit.collider);
+    //             }
+    //             if (castNormal != Vector2.zero)
+    //                 remainingDirection = remainingDirection.ProjectOnPlane(castNormal.normalized).normalized;
+    //             accumulatedVelocity += velocityTillContact;
+    //             rigidbody2D.position += velocityTillContact;
+    //             isProjectedOnIteration = true;
+    //         }
+
+    //         if (!isProjectedOnIteration)
+    //         {
+    //             accumulatedVelocity += remainingSpeed * remainingDirection;
+    //             break;
+    //         }
+    //     }
+    //     rigidbody2D.MovePosition(initialPosition + accumulatedVelocity);
+    // }
+
     public static void Slide(this Rigidbody rigidbody, Vector3 velocity, float skinWidth = 0.08f, float maxIterations = 3)
     {
         Vector3 initialPosition = rigidbody.position;

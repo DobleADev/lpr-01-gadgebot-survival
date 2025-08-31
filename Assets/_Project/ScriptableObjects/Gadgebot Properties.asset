@@ -30,7 +30,7 @@ MonoBehaviour:
   speed: 1
   gravityScale: 1
   maxFallSpeed: 12
-  fallSpeedDeathThreshold: 8
+  fallSpeedDeathThreshold: 9
   walkDelayAfterGround: 0.3
   groundLayer:
     serializedVersion: 2

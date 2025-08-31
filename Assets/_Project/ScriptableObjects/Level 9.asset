@@ -12,4 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
   m_Name: Level 9
   m_EditorClassIdentifier: 
-  _levelName: gadgebot-survival-level-9
+  _values:
+    name: Infinite Improbabilty
+    description: 
+    winPrize: 0
+    sceneName: gadgebot-survival-level-9
+    spawnCount: 6
+    goalCount: 1
+    spawnInterval: 10

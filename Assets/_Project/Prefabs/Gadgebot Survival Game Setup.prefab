@@ -1600,13 +1600,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be50c86cd9d66784fb39997786eedef5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loader: {fileID: 11400000, guid: 92b0636d98ba5a1499a014a88b57295e, type: 2}
-  spawner: {fileID: 0}
-  goal: {fileID: 0}
-  navManager: {fileID: 2655716822706517179}
-  startGameOnStart: 0
-  startSpawnInterval: 2
-  spawnInterval: 4.3
+  _loader: {fileID: 11400000, guid: 92b0636d98ba5a1499a014a88b57295e, type: 2}
+  _navManager: {fileID: 2655716822706517179}
   onWin:
     m_PersistentCalls:
       m_Calls:

@@ -1286,11 +1286,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3da7f035fe5fdf04d92345831961be31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loader: {fileID: 11400000, guid: 92b0636d98ba5a1499a014a88b57295e, type: 2}
-  GadgebotSurvivalSpawner: {fileID: 1728915024}
-  GadgebotSurvivalGoal: {fileID: 793661709}
-  spawnCount: 6
-  goalCount: 1
+  _loader: {fileID: 11400000, guid: 92b0636d98ba5a1499a014a88b57295e, type: 2}
+  _spawner: {fileID: 1728915024}
+  _goal: {fileID: 793661709}
 --- !u!4 &996718225
 Transform:
   m_ObjectHideFlags: 0
