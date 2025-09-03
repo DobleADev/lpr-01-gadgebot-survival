@@ -4,15 +4,13 @@ using UnityEngine;
 
 public class GadgebotSurvivalSwinger : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
+    [SerializeField] Transform _jointCenter;
+    [SerializeField] float _swingSpeed = 1;
+    [SerializeField] float _maxSwingAngle = 90;
+    GadgebotSurvivalGadgebotController _gadgebotSwinging;
+    
     void Update()
     {
-        
+        _jointCenter.rotation = Quaternion.AngleAxis(_maxSwingAngle * Mathf.Sin(_swingSpeed * Time.time), Vector3.back);
     }
 }

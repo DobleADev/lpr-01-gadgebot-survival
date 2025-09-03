@@ -1668,6 +1668,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5cf156f05ef174542a0d4c595118349c, type: 3}
+--- !u!4 &1685582711 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6799177898025506407, guid: 00b1abf2f416c704592c8eaf417afa9a,
+    type: 3}
+  m_PrefabInstance: {fileID: 2001336885745362386}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1702700898
 GameObject:
   m_ObjectHideFlags: 0
@@ -2151,6 +2157,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3729150867688959608, guid: 00b1abf2f416c704592c8eaf417afa9a,
+        type: 3}
+      propertyPath: _swingSpeed
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3729150867688959608, guid: 00b1abf2f416c704592c8eaf417afa9a,
+        type: 3}
+      propertyPath: _jointCenter
+      value: 
+      objectReference: {fileID: 1685582711}
     - target: {fileID: 5721221263572431064, guid: 00b1abf2f416c704592c8eaf417afa9a,
         type: 3}
       propertyPath: m_RootOrder
@@ -2164,7 +2180,7 @@ PrefabInstance:
     - target: {fileID: 5721221263572431064, guid: 00b1abf2f416c704592c8eaf417afa9a,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5721221263572431064, guid: 00b1abf2f416c704592c8eaf417afa9a,
         type: 3}
