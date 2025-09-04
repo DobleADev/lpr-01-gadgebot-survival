@@ -16,7 +16,9 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 	public Vector2 fallVelocity { get; private set; }
 	public bool isGrounded { get; private set; }
 	public Collider2D ground { get; private set;  }
-	public bool onTeletransportation { get; private set; }
+	public bool teletransporting { get; private set; }
+	public bool waitingForSwing { get; private set; }
+	public bool swinging { get; private set; }
 	public bool bridgeActivated { get; private set; }
 	// public float walkDelayAfterGround = 0.3f;
 	public int direction { get; private set; } = 1;
@@ -239,12 +241,39 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 		if (detonateCoroutine != null) StopCoroutine(detonateCoroutine);
 		walk = true;
 	}
+	
+	public void StartWaitingForSwinger()
+    {
+		waitingForSwing = true;
+		walk = false;
+    }
+
+	public void CancelWaitingForSwinger()
+    {
+		waitingForSwing = false;
+        walk = true;
+    }
+
+	public IEnumerator SwingProcess(GadgebotSurvivalSwinger swinger)
+	{
+		CancelWaitingForSwinger();
+		physicsEnabled = false;
+		swinging = true;
+		while (swinger.onSwinging)
+		{
+			// Debug.Log("Waiting for teleport end.. " + Time.time);
+			yield return null;
+		}
+		physicsEnabled = true;
+		swinging = false;
+		ChangeCommandState(properties.followCommand);
+	}
 
 	public IEnumerator TeletransportationProcess(GadgebotSurvivalTeletransporter teletransporter)
 	{
 		// Debug.Log("Local Wait Started " + Time.time);
 		walk = false;
-		onTeletransportation = true;
+		teletransporting = true;
 
 		// yield return teletransporter.process;
 		while (teletransporter.onTeletransportation)
@@ -254,9 +283,9 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 		}
 		// Debug.Log("Teleport end " + Time.time);
 		walk = true;
-		onTeletransportation = false;
+		teletransporting = false;
 		ChangeCommandState(properties.followCommand);
-		
+
 	}
 
 	IEnumerator ExplosionProcess(GadgebotDetonateCommand detonateCommand)
@@ -301,11 +330,24 @@ public class GadgebotFollowCommand : GadgebotState
 public class GadgebotSwingCommand : GadgebotState
 {
 	// public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) {}
-	// public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot) {}
-	// public override void FixedUpdate(GadgebotSurvivalGadgebotController gadgebot) {}
-	// public override void OnTriggerEnter2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other) {}
+	public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot)
+	{
+		gadgebot.CancelWaitingForSwinger();
+	}
+	public override void OnTriggerStay2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other)
+	{
+		if (gadgebot.swinging) return;
+		if (other.TryGetComponent(out GadgebotSurvivalSwinger swinger))
+		{
+			if (!gadgebot.waitingForSwing) gadgebot.StartWaitingForSwinger();
+			if (!swinger.RequestSwing(gadgebot)) return;
+			swinger.StartCoroutine(gadgebot.SwingProcess(swinger));
+		}
+	}
+
+	public override void OnTriggerEnter2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other) {}
 	// public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot) {}
-	// public override bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return true; }
+	public override bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return !gadgebot.swinging; }
 }
 [System.Serializable]
 public class GadgebotElectrifyCommand : GadgebotState
@@ -323,7 +365,7 @@ public class GadgebotElectrifyCommand : GadgebotState
 		}
 	}
 	// public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot) {}
-	public override bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return !gadgebot.onTeletransportation; }
+	public override bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return !gadgebot.teletransporting; }
 }
 [System.Serializable]
 public class GadgebotBridgeCommand : GadgebotState
