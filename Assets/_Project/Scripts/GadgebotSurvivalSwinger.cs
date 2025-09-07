@@ -25,8 +25,13 @@ public class GadgebotSurvivalSwinger : MonoBehaviour
 
     public bool RequestSwing(GadgebotSurvivalGadgebotController gadgebot)
     {
-        if (_gadgebotSwinging != null) return false;
-        if (gadgebot.direction * jointProgress < 0) return false;
+        if (_gadgebotSwinging != null
+        || gadgebot.direction * jointProgress < 0
+        || gadgebot.direction * (_isSwingingLeft ? 1 : -1) < 0)
+        {
+            return false;
+        }
+        // if (gadgebot.direction * jointProgress < 0) return false;
 
         _jointProgressOffset = jointProgress;
         _gadgebotWaitPosition = gadgebot.transform.position;
@@ -57,6 +62,7 @@ public class GadgebotSurvivalSwinger : MonoBehaviour
                         if (_gadgebotSwinging.direction == -1)
                         {
                             onSwinging = false;
+                            _gadgebotSwinging = null;
                         }
                     }
                     _isSwingingLeft = false;
@@ -75,22 +81,25 @@ public class GadgebotSurvivalSwinger : MonoBehaviour
                         if (_gadgebotSwinging.direction == 1)
                         {
                             onSwinging = false;
+                            _gadgebotSwinging = null;
                         }
                     }
                     _isSwingingLeft = true;
                     // Aquí va la lógica para soltar el objeto, activar un evento, etc.
                 }
             }
+            if (_gadgebotSwinging == null) onSwinging = false;
             if (onSwinging)
             {
-                Vector3 jointEndPosition = _jointCenterTransform.TransformPoint(_jointEndTransform.localPosition);
-                if (_gadgebotSwinging.direction * (_isSwingingLeft ? -1 : 1) < 0)
-                {
-                    jointEndPosition.x = _gadgebotSwinging.transform.position.x;
-                    jointEndPosition.z = _gadgebotSwinging.transform.position.z;
-                    _gadgebotSwinging.transform.position = Vector3.Lerp(_gadgebotWaitPosition, jointEndPosition, Mathf.Abs(jointProgress) - Mathf.Abs(_jointProgressOffset));
-                }
-                else
+                // Vector3 jointEndPosition = _jointCenterTransform.TransformPoint(_jointEndTransform.localPosition);
+                Vector3 jointEndPosition = _jointEndTransform.position + new Vector3(_gadgebotSwinging.direction * -0.4f, 0, 0);
+                // if (_gadgebotSwinging.direction * (_isSwingingLeft ? -1 : 1) < 0)
+                // {
+                //     jointEndPosition.x = _gadgebotSwinging.transform.position.x;
+                //     jointEndPosition.z = _gadgebotSwinging.transform.position.z;
+                //     _gadgebotSwinging.transform.position = Vector3.Lerp(_gadgebotWaitPosition, jointEndPosition, Mathf.Abs(jointProgress) - Mathf.Abs(_jointProgressOffset));
+                // }
+                // else
                 {
                     _gadgebotSwinging.transform.position = jointEndPosition;
                 }

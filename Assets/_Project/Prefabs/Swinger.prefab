@@ -229,7 +229,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1446524311211421416}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -365,7 +365,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _jointCenterTransform: {fileID: 6799177898025506407}
   _jointEndTransform: {fileID: 8459542949200769119}
-  _swingSpeed: 1.5
+  _swingSpeed: 2
   _maxSwingAngle: 90
   _threshold: 0.99
 --- !u!61 &3429356356490429429

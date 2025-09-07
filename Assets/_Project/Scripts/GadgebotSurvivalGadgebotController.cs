@@ -15,9 +15,9 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 	MaterialPropertyBlock lightProperty;
 	public Vector2 fallVelocity { get; private set; }
 	public bool isGrounded { get; private set; }
-	public Collider2D ground { get; private set;  }
+	public Collider2D ground { get; private set; }
 	public bool teletransporting { get; private set; }
-	public bool waitingForSwing { get; private set; }
+	public GadgebotSurvivalSwinger swingToWait { get; private set; }
 	public bool swinging { get; private set; }
 	public bool bridgeActivated { get; private set; }
 	// public float walkDelayAfterGround = 0.3f;
@@ -26,7 +26,8 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 	public bool physicsEnabled { get; private set; } = true;
 	public bool canSelect { get; private set; } = true;
 	// public LayerMask groundLayer = 1;
-	public GadgebotUnityEvent onDestroy;
+	[SerializeField] GadgebotUnityEvent _onDestroy;
+	public GadgebotUnityEvent onDestroy { get { return _onDestroy; } set { _onDestroy = value; } }
 	public Coroutine detonateCoroutine { get; private set; }
 
 	void Awake()
@@ -44,7 +45,7 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 	{
 		currentCommand.FixedUpdate(this);
 		HandleMovement();
-		
+
 	}
 
 	void OnPhysicsCollision2D(Collider2D collider)
@@ -62,9 +63,9 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 				Destroy(gadgebot.gameObject);
 			}
 		}
-    }
+	}
 
-    void OnTriggerEnter2D(Collider2D other)
+	void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.TryGetComponent(out GadgebotSurvivalGoal goal))
 		{
@@ -145,6 +146,7 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 
 	void ChangeLightColor(Color color)
 	{
+		if (lightRenderer == null) return;
 		lightProperty.SetColor("_Color", color);
 		lightRenderer.SetPropertyBlock(lightProperty);
 	}
@@ -241,18 +243,18 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 		if (detonateCoroutine != null) StopCoroutine(detonateCoroutine);
 		walk = true;
 	}
-	
-	public void StartWaitingForSwinger()
-    {
-		waitingForSwing = true;
+
+	public void StartWaitingForSwinger(GadgebotSurvivalSwinger swinger)
+	{
+		swingToWait = swinger;
 		walk = false;
-    }
+	}
 
 	public void CancelWaitingForSwinger()
-    {
-		waitingForSwing = false;
-        walk = true;
-    }
+	{
+		swingToWait = null;
+		walk = true;
+	}
 
 	public IEnumerator SwingProcess(GadgebotSurvivalSwinger swinger)
 	{
@@ -334,19 +336,44 @@ public class GadgebotSwingCommand : GadgebotState
 	{
 		gadgebot.CancelWaitingForSwinger();
 	}
-	public override void OnTriggerStay2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other)
+	public override void FixedUpdate(GadgebotSurvivalGadgebotController gadgebot)
 	{
-		if (gadgebot.swinging) return;
+		if (!gadgebot.swinging)
+		{
+			// REQUEST SWING
+			if (gadgebot.swingToWait == null
+			|| !gadgebot.swingToWait.RequestSwing(gadgebot)) return;
+			gadgebot.swingToWait.StartCoroutine(gadgebot.SwingProcess(gadgebot.swingToWait));
+		}
+	}
+	public override void OnTriggerEnter2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other)
+	{
+		if (gadgebot.swinging || gadgebot.swingToWait != null) return;
 		if (other.TryGetComponent(out GadgebotSurvivalSwinger swinger))
 		{
-			if (!gadgebot.waitingForSwing) gadgebot.StartWaitingForSwinger();
-			if (!swinger.RequestSwing(gadgebot)) return;
-			swinger.StartCoroutine(gadgebot.SwingProcess(swinger));
+			// WAIT FOR SWINGER
+			gadgebot.StartWaitingForSwinger(swinger);
 		}
 	}
 
-	public override void OnTriggerEnter2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other) {}
-	// public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot) {}
+	// public override void OnTriggerEnter2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other) {}
+	public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot)
+	{
+		Gizmos.color = new Color(1, 1, 1, 0);
+
+		if (gadgebot.swingToWait != null)
+		{
+			Gizmos.color = Color.gray;
+		}
+
+		if (gadgebot.swinging)
+		{
+			Gizmos.color = Color.white;
+		}
+
+		Gizmos.DrawWireCube(gadgebot.transform.position + Vector3.up, 0.2f * Vector2.one);
+	}
+
 	public override bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return !gadgebot.swinging; }
 }
 [System.Serializable]

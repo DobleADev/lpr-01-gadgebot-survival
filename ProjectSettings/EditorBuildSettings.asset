@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/gadgebot-survival-level-9.unity
     guid: e57fb9ba255d24544bf84c59bbd1aa64
+  - enabled: 1
+    path: Assets/_Project/Scenes/gadgebot-survival-level-9-swing-test.unity
+    guid: 5bc0c75ce75d47c43b3ebb85f0ffb00b
   m_configObjects: {}
