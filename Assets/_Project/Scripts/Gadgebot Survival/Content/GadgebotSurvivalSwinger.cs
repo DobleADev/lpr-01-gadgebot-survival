@@ -15,7 +15,7 @@ public class GadgebotSurvivalSwinger : MonoBehaviour
     public float jointProgress { get; private set; }
     public bool onSwinging { get; private set; }
     private bool _isSwingingLeft = true;
-    private float _jointProgressOffset;
+    [SerializeField] private float _jointProgressOffset;
     private Vector3 _gadgebotWaitPosition;
 
     private void Start()
@@ -33,7 +33,7 @@ public class GadgebotSurvivalSwinger : MonoBehaviour
         }
         // if (gadgebot.direction * jointProgress < 0) return false;
 
-        _jointProgressOffset = jointProgress;
+        // _jointProgressOffset = jointProgress;
         _gadgebotWaitPosition = gadgebot.transform.position;
         _gadgebotSwinging = gadgebot;
         onSwinging = true;
@@ -93,13 +93,13 @@ public class GadgebotSurvivalSwinger : MonoBehaviour
             {
                 // Vector3 jointEndPosition = _jointCenterTransform.TransformPoint(_jointEndTransform.localPosition);
                 Vector3 jointEndPosition = _jointEndTransform.position + new Vector3(_gadgebotSwinging.direction * -0.4f, 0, 0);
-                // if (_gadgebotSwinging.direction * (_isSwingingLeft ? -1 : 1) < 0)
-                // {
-                //     jointEndPosition.x = _gadgebotSwinging.transform.position.x;
-                //     jointEndPosition.z = _gadgebotSwinging.transform.position.z;
-                //     _gadgebotSwinging.transform.position = Vector3.Lerp(_gadgebotWaitPosition, jointEndPosition, Mathf.Abs(jointProgress) - Mathf.Abs(_jointProgressOffset));
-                // }
-                // else
+                if (_gadgebotSwinging.direction * (_isSwingingLeft ? -1 : 1) < 0)
+                {
+                    jointEndPosition.x = _gadgebotSwinging.transform.position.x;
+                    jointEndPosition.z = _gadgebotSwinging.transform.position.z;
+                    _gadgebotSwinging.transform.position = Vector3.Lerp(_gadgebotWaitPosition, jointEndPosition, Mathf.Abs(jointProgress) + Mathf.Abs(_jointProgressOffset));
+                }
+                else
                 {
                     _gadgebotSwinging.transform.position = jointEndPosition;
                 }
