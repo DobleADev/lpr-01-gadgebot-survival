@@ -5,458 +5,473 @@ using UnityEngine;
 
 // namespace DobleADev.GadgebotSurvival.Gadgebot
 // {
-	public class GadgebotSurvivalGadgebotController : MonoBehaviour
+public class GadgebotSurvivalGadgebotController : MonoBehaviour
+{
+	[SerializeField] GadgebotSurvivalGadgebotData _properties;
+	public GadgebotSurvivalGadgebotData properties { get { return _properties; } }
+	[SerializeField] Rigidbody2D physics;
+	[SerializeField] BoxCollider2D boxCollider;
+	[SerializeField] MeshRenderer lightRenderer;
+	float timeAfterGrounded;
+	GadgebotState currentCommand;
+	MaterialPropertyBlock lightProperty;
+	public Vector2 fallVelocity { get; private set; }
+	public bool isGrounded { get; private set; }
+	public Collider2D ground { get; private set; }
+	public bool teletransporting { get; private set; }
+	public GadgebotSurvivalSwinger swingToWait { get; private set; }
+	public bool swinging { get; private set; }
+	public bool bridgeActivated { get; private set; }
+	// public float walkDelayAfterGround = 0.3f;
+	public int direction { get; private set; } = 1;
+	public bool walk { get; private set; } = true;
+	public bool physicsEnabled { get; private set; } = true;
+	public bool canSelect { get; private set; } = true;
+	// public LayerMask groundLayer = 1;
+	[SerializeField] GadgebotUnityEvent _onDestroy;
+	public GadgebotUnityEvent onDestroy { get { return _onDestroy; } set { _onDestroy = value; } }
+	public Coroutine detonateCoroutine { get; private set; }
+
+	void Awake()
 	{
-		[SerializeField] GadgebotSurvivalGadgebotData _properties;
-		public GadgebotSurvivalGadgebotData properties { get { return _properties; } }
-		[SerializeField] Rigidbody2D physics;
-		[SerializeField] BoxCollider2D boxCollider;
-		[SerializeField] MeshRenderer lightRenderer;
-		float timeAfterGrounded;
-		GadgebotState currentCommand;
-		MaterialPropertyBlock lightProperty;
-		public Vector2 fallVelocity { get; private set; }
-		public bool isGrounded { get; private set; }
-		public Collider2D ground { get; private set; }
-		public bool teletransporting { get; private set; }
-		public GadgebotSurvivalSwinger swingToWait { get; private set; }
-		public bool swinging { get; private set; }
-		public bool bridgeActivated { get; private set; }
-		// public float walkDelayAfterGround = 0.3f;
-		public int direction { get; private set; } = 1;
-		public bool walk { get; private set; } = true;
-		public bool physicsEnabled { get; private set; } = true;
-		public bool canSelect { get; private set; } = true;
-		// public LayerMask groundLayer = 1;
-		[SerializeField] GadgebotUnityEvent _onDestroy;
-		public GadgebotUnityEvent onDestroy { get { return _onDestroy; } set { _onDestroy = value; } }
-		public Coroutine detonateCoroutine { get; private set; }
+		lightProperty = new MaterialPropertyBlock();
+		timeAfterGrounded = properties.walkDelayAfterGround;
+	}
 
-		void Awake()
+	void Start()
+	{
+		ChangeCommandState(properties.followCommand);
+	}
+
+	void FixedUpdate()
+	{
+		currentCommand.FixedUpdate(this);
+		HandleMovement();
+
+	}
+
+	void OnPhysicsCollision2D(Collider2D collider)
+	{
+		if (collider.TryGetComponent(out GadgebotSurvivalDirectionBlock directionBlock))
 		{
-			lightProperty = new MaterialPropertyBlock();
-			timeAfterGrounded = properties.walkDelayAfterGround;
+			direction = directionBlock.direction;
 		}
 
-		void Start()
+		if (collider.TryGetComponent(out GadgebotSurvivalGadgebotController gadgebot))
 		{
-			ChangeCommandState(properties.followCommand);
-		}
-
-		void FixedUpdate()
-		{
-			currentCommand.FixedUpdate(this);
-			HandleMovement();
-
-		}
-
-		void OnPhysicsCollision2D(Collider2D collider)
-		{
-			if (collider.TryGetComponent(out GadgebotSurvivalDirectionBlock directionBlock))
+			if (Vector2.Angle((gadgebot.transform.position - transform.position).normalized, Vector2.down) < 30)
 			{
-				direction = directionBlock.direction;
-			}
-
-			if (collider.TryGetComponent(out GadgebotSurvivalGadgebotController gadgebot))
-			{
-				if (Vector2.Angle((gadgebot.transform.position - transform.position).normalized, Vector2.down) < 30)
-				{
-					fallVelocity = Vector2.zero;
-					Destroy(gadgebot.gameObject);
-				}
-			}
-		}
-
-		void OnTriggerEnter2D(Collider2D other)
-		{
-			if (other.TryGetComponent(out GadgebotSurvivalGoal goal))
-			{
-				goal.OnInteract(this);
-			}
-
-			if (other.TryGetComponent(out GadgebotSurvivalDeathZone GadgebotSurvivalDeathZone))
-			{
-				Destroy(gameObject);
-			}
-
-			currentCommand.OnTriggerEnter2D(this, other);
-		}
-
-		void OnTriggerStay2D(Collider2D other)
-		{
-			currentCommand.OnTriggerStay2D(this, other);
-		}
-
-		void OnDestroy()
-		{
-			onDestroy?.Invoke(this);
-		}
-
-		void OnDrawGizmos()
-		{
-			Gizmos.color = new Color(1, 1, 1, 0.4f);
-			Gizmos.DrawWireCube(physics.position + new Vector2(0, -0.48f), new Vector2(boxCollider.size.x, 0.01f));
-			if (currentCommand != null) currentCommand.OnDrawGizmos(this);
-		}
-
-		void HandleMovement()
-		{
-			if (!physicsEnabled)
-			{
-				// fallVelocity = Vector2.zero;
-				return;
-			}
-			// ground = Physics2D.OverlapBox(physics.position + new Vector2(0, -0.45f), new Vector2(boxCollider.size.x, 0.1f), 0, groundLayer);
-			// isGrounded = ground != null;
-			Vector2 movement = Vector2.zero;
-
-			Collider2D[] groundCollider = new Collider2D[1];
-			ContactFilter2D groundFilter = new ContactFilter2D();
-			groundFilter.useTriggers = false;
-			isGrounded = Physics2D.OverlapBox(physics.position + new Vector2(0, -0.48f), new Vector2(boxCollider.size.x, 0.01f), 0, groundFilter, groundCollider) > 0;
-			if (isGrounded)
-			{
-				ground = (1 << groundCollider[0].gameObject.layer) == properties.groundLayer ? groundCollider[0] : null;
-			}
-
-			if (isGrounded)
-			{
-				// if (ground.TryGetComponent(out GadgebotSurvivalDirectionBlock directionBlock))
-				// {
-				// 	direction = directionBlock.direction;
-				// }
-				if (timeAfterGrounded >= properties.walkDelayAfterGround)
-				{
-					if (walk) movement = direction * Vector2.right * properties.speed;
-				}
-				else timeAfterGrounded += Time.deltaTime;
-
-				if (fallVelocity.y < -properties.fallSpeedDeathThreshold) Destroy(gameObject);
 				fallVelocity = Vector2.zero;
+				Destroy(gadgebot.gameObject);
 			}
-			else
-			{
-				timeAfterGrounded = 0;
-				movement = fallVelocity;
-				fallVelocity += Time.deltaTime * Physics2D.gravity * properties.gravityScale;
-				fallVelocity = Vector2.ClampMagnitude(fallVelocity, properties.maxFallSpeed);
-			}
+		}
+	}
 
-			// physics.Slide(Time.deltaTime * movement, 0.08f, 2);
-			physics.Walk(Time.deltaTime * movement, 45, 0.08f, 2, 1);
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		if (other.TryGetComponent(out GadgebotSurvivalGoal goal))
+		{
+			goal.OnInteract(this);
 		}
 
-		void ChangeLightColor(Color color)
+		if (other.TryGetComponent(out GadgebotSurvivalGadgebotCommandTrigger gadgebotCommandTrigger))
 		{
-			if (lightRenderer == null) return;
-			lightProperty.SetColor("_Color", color);
-			lightRenderer.SetPropertyBlock(lightProperty);
+			gadgebotCommandTrigger.OnInteract(this);
 		}
 
-		bool IsLike(string a, string b) { return a.Equals(b, StringComparison.OrdinalIgnoreCase); }
-
-		void ChangeCommandState(GadgebotState commandState)
+		if (other.TryGetComponent(out GadgebotSurvivalDeathZone GadgebotSurvivalDeathZone))
 		{
-			if (commandState == null || currentCommand == commandState) return;
-			if (currentCommand != null)
-			{
-				if (!currentCommand.CanChangeCommand(this)) return;
-				currentCommand.OnCommandExit(this);
-			}
-			(currentCommand = commandState).OnCommandEnter(this);
-			ChangeLightColor(currentCommand.lightColor);
-		}
-
-		public IEnumerator GoBridge(GadgebotBridgeCommand bridgeCommand)
-		{
-			bridgeActivated = true;
-			physicsEnabled = false;
-			canSelect = false;
-			Collider2D lastGround = ground;
-			Transform gadgebotTransform = transform;
-			Vector2 initialPosition = gadgebotTransform.position;
-			Vector2 endPosition = (Vector2)lastGround.transform.position + new Vector2(direction * 1f, 0);
-			float t = 0;
-			float deltaDuration = 1 / bridgeCommand.jumpDuration;
-			while (t < 1)
-			{
-				float jump = Mathf.Lerp(0, bridgeCommand.jumpMaxApex, Mathf.Sin(t * Mathf.PI));
-				Vector3 traslation = Vector3.Lerp(initialPosition, endPosition, t);
-				gadgebotTransform.position = traslation + jump * Vector3.up;
-				t += deltaDuration * Time.deltaTime;
-				yield return null;
-			}
-			gadgebotTransform.position = endPosition;
-			var block = Instantiate(bridgeCommand.bridgeBlockPrefab, endPosition, Quaternion.identity);
-			UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(block, gameObject.scene);
 			Destroy(gameObject);
 		}
 
-		public void TryDestroyGameObject(GameObject gameObject)
-		{
-			if (gameObject == null) return;
-			Destroy(gameObject);
-		}
-
-		public void TryDestroyGameObject(Component component)
-		{
-			if (component == null) return;
-			Destroy(component.gameObject);
-		}
-
-		public GameObject TryInstantiate(GameObject gameObject, Transform parent = null)
-		{
-			if (gameObject == null) return null;
-			return Instantiate(gameObject, parent);
-		}
-
-		public GameObject TryInstantiate(GameObject gameObject, Vector3 position, Quaternion rotation)
-		{
-			if (gameObject == null) return null;
-			return Instantiate(gameObject, position, rotation);
-		}
-
-		public Component TryInstantiate(Component component, Transform parent = null)
-		{
-			if (component == null) return null;
-			return Instantiate(component, parent);
-		}
-
-
-		public Component TryInstantiate(Component component, Vector3 position, Quaternion rotation)
-		{
-			if (component == null) return null;
-			return Instantiate(component, position, rotation);
-		}
-
-		// public void RequestDefaultCommand()
-		// {
-		// 	ChangeCommandState(properties.followCommand);
-		// }
-
-		public void StartDetonation(GadgebotDetonateCommand detonateCommand)
-		{
-			detonateCoroutine = StartCoroutine(ExplosionProcess(detonateCommand));
-			walk = false;
-		}
-
-		public void CancelDetonation()
-		{
-			if (detonateCoroutine != null) StopCoroutine(detonateCoroutine);
-			walk = true;
-		}
-
-		public void StartWaitingForSwinger(GadgebotSurvivalSwinger swinger)
-		{
-			swingToWait = swinger;
-			walk = false;
-		}
-
-		public void CancelWaitingForSwinger()
-		{
-			swingToWait = null;
-			walk = true;
-		}
-
-		public IEnumerator SwingProcess(GadgebotSurvivalSwinger swinger)
-		{
-			CancelWaitingForSwinger();
-			physicsEnabled = false;
-			swinging = true;
-			while (swinger.onSwinging)
-			{
-				// Debug.Log("Waiting for teleport end.. " + Time.time);
-				yield return null;
-			}
-			physicsEnabled = true;
-			swinging = false;
-			ChangeCommandState(properties.followCommand);
-		}
-
-		public IEnumerator TeletransportationProcess(GadgebotSurvivalTeletransporter teletransporter)
-		{
-			// Debug.Log("Local Wait Started " + Time.time);
-			walk = false;
-			teletransporting = true;
-
-			// yield return teletransporter.process;
-			while (teletransporter.onTeletransportation)
-			{
-				// Debug.Log("Waiting for teleport end.. " + Time.time);
-				yield return null;
-			}
-			// Debug.Log("Teleport end " + Time.time);
-			walk = true;
-			teletransporting = false;
-			ChangeCommandState(properties.followCommand);
-
-		}
-
-		IEnumerator ExplosionProcess(GadgebotDetonateCommand detonateCommand)
-		{
-			yield return new WaitForSeconds(detonateCommand.detonationBuildUpSeconds);
-			Detonate();
-		}
-
-		void Detonate()
-		{
-			Vector2 gadgebotPosition = transform.position;
-			// gadgebot.TryDestroyGameObject(Physics2D.OverlapPoint(gadgebotPosition + new Vector2(0, -0.48f), gadgebot.groundLayer)); // ground
-			TryDestroyGameObject(ground); // ground
-			TryDestroyGameObject(Physics2D.OverlapPoint(gadgebotPosition + new Vector2(-0.5f, 0), 1 << gameObject.layer)); // left gadgebot
-			TryDestroyGameObject(Physics2D.OverlapPoint(gadgebotPosition + new Vector2(0.5f, 0), 1 << gameObject.layer)); // right gadgebot
-			TryDestroyGameObject(this);
-		}
-
-		public void RequestCommandChange(GadgebotCommandOption commandOption)
-		{
-			switch (commandOption.command)
-			{
-				case GadgebotCommandOption.GadgebotCommands.Swing: ChangeCommandState(properties.swingCommand); break;
-				case GadgebotCommandOption.GadgebotCommands.Electrify: ChangeCommandState(properties.electrifyCommand); break;
-				case GadgebotCommandOption.GadgebotCommands.Bridge: ChangeCommandState(properties.bridgeCommand); break;
-				case GadgebotCommandOption.GadgebotCommands.Detonate: ChangeCommandState(properties.detonateCommand); break;
-				default: ChangeCommandState(properties.followCommand); break;
-			}
-		}
+		currentCommand.OnTriggerEnter2D(this, other);
 	}
 
-	[System.Serializable]
-	public class GadgebotFollowCommand : GadgebotState
+	void OnTriggerStay2D(Collider2D other)
 	{
-		// public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) {}
-		// public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot) {}
-		// public override void OnTriggerEnter2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other) {}
-		// public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot) {}
-		// public override bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return true; }
+		currentCommand.OnTriggerStay2D(this, other);
 	}
-	[System.Serializable]
-	public class GadgebotSwingCommand : GadgebotState
+
+	void OnDestroy()
 	{
-		// public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) {}
-		public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot)
-		{
-			gadgebot.CancelWaitingForSwinger();
-		}
-		public override void FixedUpdate(GadgebotSurvivalGadgebotController gadgebot)
-		{
-			if (!gadgebot.swinging)
-			{
-				// REQUEST SWING
-				if (gadgebot.swingToWait == null
-				|| !gadgebot.swingToWait.RequestSwing(gadgebot)) return;
-				gadgebot.swingToWait.StartCoroutine(gadgebot.SwingProcess(gadgebot.swingToWait));
-			}
-		}
-		public override void OnTriggerEnter2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other)
-		{
-			if (gadgebot.swinging || gadgebot.swingToWait != null) return;
-			if (other.TryGetComponent(out GadgebotSurvivalSwinger swinger))
-			{
-				// WAIT FOR SWINGER
-				gadgebot.StartWaitingForSwinger(swinger);
-			}
-		}
-
-		// public override void OnTriggerEnter2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other) {}
-		public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot)
-		{
-			Gizmos.color = new Color(1, 1, 1, 0);
-
-			if (gadgebot.swingToWait != null)
-			{
-				Gizmos.color = Color.gray;
-			}
-
-			if (gadgebot.swinging)
-			{
-				Gizmos.color = Color.white;
-			}
-
-			Gizmos.DrawWireCube(gadgebot.transform.position + Vector3.up, 0.2f * Vector2.one);
-		}
-
-		public override bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return !gadgebot.swinging; }
+		onDestroy?.Invoke(this);
 	}
-	[System.Serializable]
-	public class GadgebotElectrifyCommand : GadgebotState
+
+	void OnDrawGizmos()
 	{
-		// public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) {}
-		// public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot) {}
-		// public override void FixedUpdate(GadgebotSurvivalGadgebotController gadgebot) {}
-		public override void OnTriggerStay2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other)
+		Gizmos.color = new Color(1, 1, 1, 0.4f);
+		Gizmos.DrawWireCube(physics.position + new Vector2(0, -0.48f), new Vector2(boxCollider.size.x, 0.01f));
+		if (currentCommand != null) currentCommand.OnDrawGizmos(this);
+	}
+
+	void HandleMovement()
+	{
+		if (!physicsEnabled)
 		{
-			if (other.TryGetComponent(out GadgebotSurvivalTeletransporter teletransporter))
+			// fallVelocity = Vector2.zero;
+			return;
+		}
+		// ground = Physics2D.OverlapBox(physics.position + new Vector2(0, -0.45f), new Vector2(boxCollider.size.x, 0.1f), 0, groundLayer);
+		// isGrounded = ground != null;
+		Vector2 movement = Vector2.zero;
+
+		Collider2D[] groundCollider = new Collider2D[1];
+		ContactFilter2D groundFilter = new ContactFilter2D();
+		groundFilter.useTriggers = false;
+		isGrounded = Physics2D.OverlapBox(physics.position + new Vector2(0, -0.48f), new Vector2(boxCollider.size.x, 0.01f), 0, groundFilter, groundCollider) > 0;
+		if (isGrounded)
+		{
+			ground = (1 << groundCollider[0].gameObject.layer) == properties.groundLayer ? groundCollider[0] : null;
+		}
+
+		if (isGrounded)
+		{
+			// if (ground.TryGetComponent(out GadgebotSurvivalDirectionBlock directionBlock))
+			// {
+			// 	direction = directionBlock.direction;
+			// }
+			if (timeAfterGrounded >= properties.walkDelayAfterGround)
 			{
-				// RequestTeleport(gadgebot, teletransporter);
-				if (!teletransporter.RequestTeleport(gadgebot)) return;
-				teletransporter.StartCoroutine(gadgebot.TeletransportationProcess(teletransporter));
+				if (walk) movement = direction * Vector2.right * properties.speed;
 			}
+			else timeAfterGrounded += Time.deltaTime;
+
+			if (fallVelocity.y < -properties.fallSpeedDeathThreshold) Destroy(gameObject);
+			fallVelocity = Vector2.zero;
 		}
-		// public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot) {}
-		public override bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return !gadgebot.teletransporting; }
+		else
+		{
+			timeAfterGrounded = 0;
+			movement = fallVelocity;
+			fallVelocity += Time.deltaTime * Physics2D.gravity * properties.gravityScale;
+			fallVelocity = Vector2.ClampMagnitude(fallVelocity, properties.maxFallSpeed);
+		}
+
+		// physics.Slide(Time.deltaTime * movement, 0.08f, 2);
+		physics.Walk(Time.deltaTime * movement, 45, 0.08f, 2, 1);
 	}
-	[System.Serializable]
-	public class GadgebotBridgeCommand : GadgebotState
+
+	void ChangeLightColor(Color color)
 	{
-		public GameObject bridgeBlockPrefab;
-		public float jumpMaxApex = 1;
-		public float jumpDuration = 1;
-		// public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) {}
-		// public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot) {}
-
-		public override void FixedUpdate(GadgebotSurvivalGadgebotController gadgebot)
-		{
-			if (gadgebot.bridgeActivated) return;
-
-			if (gadgebot.isGrounded && gadgebot.ground && gadgebot.fallVelocity.y == 0 && !Physics2D.OverlapPoint((Vector2)gadgebot.transform.position + new Vector2(0, -0.6f), gadgebot.properties.groundLayer))
-			{
-				gadgebot.StartCoroutine(gadgebot.GoBridge(this));
-			}
-		}
-
-		public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot)
-		{
-			if (gadgebot.bridgeActivated || !gadgebot.isGrounded) return;
-			Gizmos.color = lightColor;
-			Gizmos.DrawWireCube((Vector2)gadgebot.transform.position + new Vector2(0, -0.6f), 0.1f * Vector2.one);
-		}
-		public override bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return !gadgebot.bridgeActivated; }
+		if (lightRenderer == null) return;
+		lightProperty.SetColor("_Color", color);
+		lightRenderer.SetPropertyBlock(lightProperty);
 	}
-	[System.Serializable]
-	public class GadgebotDetonateCommand : GadgebotState
+
+	bool IsLike(string a, string b) { return a.Equals(b, StringComparison.OrdinalIgnoreCase); }
+
+	void ChangeCommandState(GadgebotState commandState)
 	{
-		public float detonationBuildUpSeconds = 3;
-
-		public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot)
+		if (commandState == null || currentCommand == commandState) return;
+		if (currentCommand != null)
 		{
-			gadgebot.StartDetonation(this);
+			if (!currentCommand.CanChangeCommand(this)) return;
+			currentCommand.OnCommandExit(this);
 		}
-
-		public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot)
-		{
-			gadgebot.CancelDetonation();
-		}
-
-		public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot)
-		{
-			Vector2 gadgebotPosition = gadgebot.transform.position;
-			Gizmos.color = lightColor;
-			// Gizmos.DrawWireCube(gadgebotPosition + new Vector2(0, -0.48f), 0.1f * Vector2.one);
-			Gizmos.DrawWireCube(gadgebotPosition + new Vector2(-0.5f, 0), 0.1f * Vector2.one);
-			Gizmos.DrawWireCube(gadgebotPosition + new Vector2(0.5f, 0), 0.1f * Vector2.one);
-		}
+		(currentCommand = commandState).OnCommandEnter(this);
+		ChangeLightColor(currentCommand.lightColor);
 	}
-	public abstract class GadgebotState
+
+	public IEnumerator GoBridge(GadgebotBridgeCommand bridgeCommand)
 	{
-		[SerializeField] Color _lightColor = new Color(1, 1, 1, 1);
-		public Color lightColor { get { return _lightColor; } }
-		public virtual void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) { }
-		public virtual void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot) { }
-		public virtual void FixedUpdate(GadgebotSurvivalGadgebotController gadgebot) { }
-		public virtual void OnTriggerEnter2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other) { }
-		public virtual void OnTriggerStay2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other) { }
-		public virtual void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot) { }
-		public virtual bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return true; }
+		bridgeActivated = true;
+		physicsEnabled = false;
+		canSelect = false;
+		Collider2D lastGround = ground;
+		Transform gadgebotTransform = transform;
+		Vector2 initialPosition = gadgebotTransform.position;
+		Vector2 endPosition = (Vector2)lastGround.transform.position + new Vector2(direction * 1f, 0);
+		float t = 0;
+		float deltaDuration = 1 / bridgeCommand.jumpDuration;
+		while (t < 1)
+		{
+			float jump = Mathf.Lerp(0, bridgeCommand.jumpMaxApex, Mathf.Sin(t * Mathf.PI));
+			Vector3 traslation = Vector3.Lerp(initialPosition, endPosition, t);
+			gadgebotTransform.position = traslation + jump * Vector3.up;
+			t += deltaDuration * Time.deltaTime;
+			yield return null;
+		}
+		gadgebotTransform.position = endPosition;
+		var block = Instantiate(bridgeCommand.bridgeBlockPrefab, endPosition, Quaternion.identity);
+		UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(block, gameObject.scene);
+		Destroy(gameObject);
 	}
+
+	public void TryDestroyGameObject(GameObject gameObject)
+	{
+		if (gameObject == null) return;
+		Destroy(gameObject);
+	}
+
+	public void TryDestroyGameObject(Component component)
+	{
+		if (component == null) return;
+		Destroy(component.gameObject);
+	}
+
+	public GameObject TryInstantiate(GameObject gameObject, Transform parent = null)
+	{
+		if (gameObject == null) return null;
+		return Instantiate(gameObject, parent);
+	}
+
+	public GameObject TryInstantiate(GameObject gameObject, Vector3 position, Quaternion rotation)
+	{
+		if (gameObject == null) return null;
+		return Instantiate(gameObject, position, rotation);
+	}
+
+	public Component TryInstantiate(Component component, Transform parent = null)
+	{
+		if (component == null) return null;
+		return Instantiate(component, parent);
+	}
+
+
+	public Component TryInstantiate(Component component, Vector3 position, Quaternion rotation)
+	{
+		if (component == null) return null;
+		return Instantiate(component, position, rotation);
+	}
+
+	// public void RequestDefaultCommand()
+	// {
+	// 	ChangeCommandState(properties.followCommand);
+	// }
+
+	public void StartDetonation(GadgebotDetonateCommand detonateCommand)
+	{
+		detonateCoroutine = StartCoroutine(ExplosionProcess(detonateCommand));
+		walk = false;
+	}
+
+	public void CancelDetonation()
+	{
+		if (detonateCoroutine != null) StopCoroutine(detonateCoroutine);
+		walk = true;
+	}
+
+	public void StartWaitingForSwinger(GadgebotSurvivalSwinger swinger)
+	{
+		swingToWait = swinger;
+		walk = false;
+	}
+
+	public void CancelWaitingForSwinger()
+	{
+		swingToWait = null;
+		walk = true;
+	}
+
+	public IEnumerator SwingProcess(GadgebotSurvivalSwinger swinger)
+	{
+		CancelWaitingForSwinger();
+		physicsEnabled = false;
+		swinging = true;
+		while (swinger.onSwinging)
+		{
+			// Debug.Log("Waiting for teleport end.. " + Time.time);
+			yield return null;
+		}
+		physicsEnabled = true;
+		swinging = false;
+		ChangeCommandState(properties.followCommand);
+	}
+
+	public IEnumerator TeletransportationProcess(GadgebotSurvivalTeletransporter teletransporter)
+	{
+		// Debug.Log("Local Wait Started " + Time.time);
+		walk = false;
+		teletransporting = true;
+
+		// yield return teletransporter.process;
+		while (teletransporter.onTeletransportation)
+		{
+			// Debug.Log("Waiting for teleport end.. " + Time.time);
+			yield return null;
+		}
+		// Debug.Log("Teleport end " + Time.time);
+		walk = true;
+		teletransporting = false;
+		ChangeCommandState(properties.followCommand);
+
+	}
+
+	IEnumerator ExplosionProcess(GadgebotDetonateCommand detonateCommand)
+	{
+		yield return new WaitForSeconds(detonateCommand.detonationBuildUpSeconds);
+		Detonate();
+	}
+
+	void Detonate()
+	{
+		Vector2 gadgebotPosition = transform.position;
+		// gadgebot.TryDestroyGameObject(Physics2D.OverlapPoint(gadgebotPosition + new Vector2(0, -0.48f), gadgebot.groundLayer)); // ground
+		TryDestroyGameObject(ground); // ground
+		TryDestroyGameObject(Physics2D.OverlapPoint(gadgebotPosition + new Vector2(-0.5f, 0), 1 << gameObject.layer)); // left gadgebot
+		TryDestroyGameObject(Physics2D.OverlapPoint(gadgebotPosition + new Vector2(0.5f, 0), 1 << gameObject.layer)); // right gadgebot
+		TryDestroyGameObject(this);
+	}
+
+	public void RequestCommandChange(GadgebotCommandOption commandOption)
+	{
+		switch (commandOption.command)
+		{
+			case GadgebotCommandOption.GadgebotCommands.Swing: ChangeCommandState(properties.swingCommand); break;
+			case GadgebotCommandOption.GadgebotCommands.Electrify: ChangeCommandState(properties.electrifyCommand); break;
+			case GadgebotCommandOption.GadgebotCommands.Bridge: ChangeCommandState(properties.bridgeCommand); break;
+			case GadgebotCommandOption.GadgebotCommands.Detonate: ChangeCommandState(properties.detonateCommand); break;
+			default: ChangeCommandState(properties.followCommand); break;
+		}
+	}
+}
+
+[System.Serializable]
+public class GadgebotFollowCommand : GadgebotState
+{
+	// public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) {}
+	// public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot) {}
+	// public override void OnTriggerEnter2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other) {}
+	// public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot) {}
+	// public override bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return true; }
+}
+[System.Serializable]
+public class GadgebotSwingCommand : GadgebotState
+{
+	// public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) {}
+	public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot)
+	{
+		gadgebot.CancelWaitingForSwinger();
+	}
+	public override void FixedUpdate(GadgebotSurvivalGadgebotController gadgebot)
+	{
+		if (!gadgebot.swinging)
+		{
+			// REQUEST SWING
+			if (!gadgebot.isGrounded 
+			|| gadgebot.swingToWait == null
+			|| !gadgebot.swingToWait.RequestSwing(gadgebot)) return;
+			gadgebot.swingToWait.StartCoroutine(gadgebot.SwingProcess(gadgebot.swingToWait));
+		}
+	}
+	public override void OnTriggerEnter2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other)
+	{
+		RequestSwing(gadgebot, other);
+	}
+
+	public override void OnTriggerStay2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other)
+	{
+		RequestSwing(gadgebot, other);
+	}
+
+	void RequestSwing(GadgebotSurvivalGadgebotController gadgebot, Collider2D other)
+	{
+		if (!gadgebot.isGrounded || gadgebot.swinging || gadgebot.swingToWait != null) return;
+		if (other.TryGetComponent(out GadgebotSurvivalSwinger swinger))
+		{
+			// WAIT FOR SWINGER
+			gadgebot.StartWaitingForSwinger(swinger);
+		}
+	}
+
+	public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot)
+	{
+		Gizmos.color = new Color(1, 1, 1, 0);
+
+		if (gadgebot.swingToWait != null)
+		{
+			Gizmos.color = Color.gray;
+		}
+
+		if (gadgebot.swinging)
+		{
+			Gizmos.color = Color.white;
+		}
+
+		Gizmos.DrawWireCube(gadgebot.transform.position + Vector3.up, 0.2f * Vector2.one);
+	}
+
+	public override bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return !gadgebot.swinging; }
+}
+[System.Serializable]
+public class GadgebotElectrifyCommand : GadgebotState
+{
+	// public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) {}
+	// public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot) {}
+	// public override void FixedUpdate(GadgebotSurvivalGadgebotController gadgebot) {}
+	public override void OnTriggerStay2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other)
+	{
+		if (other.TryGetComponent(out GadgebotSurvivalTeletransporter teletransporter))
+		{
+			// RequestTeleport(gadgebot, teletransporter);
+			if (!teletransporter.RequestTeleport(gadgebot)) return;
+			teletransporter.StartCoroutine(gadgebot.TeletransportationProcess(teletransporter));
+		}
+	}
+	// public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot) {}
+	public override bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return !gadgebot.teletransporting; }
+}
+[System.Serializable]
+public class GadgebotBridgeCommand : GadgebotState
+{
+	public GameObject bridgeBlockPrefab;
+	public float jumpMaxApex = 1;
+	public float jumpDuration = 1;
+	// public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) {}
+	// public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot) {}
+
+	public override void FixedUpdate(GadgebotSurvivalGadgebotController gadgebot)
+	{
+		if (gadgebot.bridgeActivated) return;
+
+		if (gadgebot.isGrounded && gadgebot.ground && gadgebot.fallVelocity.y == 0 && !Physics2D.OverlapPoint((Vector2)gadgebot.transform.position + new Vector2(0, -0.6f), gadgebot.properties.groundLayer))
+		{
+			gadgebot.StartCoroutine(gadgebot.GoBridge(this));
+		}
+	}
+
+	public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot)
+	{
+		if (gadgebot.bridgeActivated || !gadgebot.isGrounded) return;
+		Gizmos.color = lightColor;
+		Gizmos.DrawWireCube((Vector2)gadgebot.transform.position + new Vector2(0, -0.6f), 0.1f * Vector2.one);
+	}
+	public override bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return !gadgebot.bridgeActivated; }
+}
+[System.Serializable]
+public class GadgebotDetonateCommand : GadgebotState
+{
+	public float detonationBuildUpSeconds = 3;
+
+	public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot)
+	{
+		gadgebot.StartDetonation(this);
+	}
+
+	public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot)
+	{
+		gadgebot.CancelDetonation();
+	}
+
+	public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot)
+	{
+		Vector2 gadgebotPosition = gadgebot.transform.position;
+		Gizmos.color = lightColor;
+		// Gizmos.DrawWireCube(gadgebotPosition + new Vector2(0, -0.48f), 0.1f * Vector2.one);
+		Gizmos.DrawWireCube(gadgebotPosition + new Vector2(-0.5f, 0), 0.1f * Vector2.one);
+		Gizmos.DrawWireCube(gadgebotPosition + new Vector2(0.5f, 0), 0.1f * Vector2.one);
+	}
+}
+public abstract class GadgebotState
+{
+	[SerializeField] Color _lightColor = new Color(1, 1, 1, 1);
+	public Color lightColor { get { return _lightColor; } }
+	public virtual void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) { }
+	public virtual void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot) { }
+	public virtual void FixedUpdate(GadgebotSurvivalGadgebotController gadgebot) { }
+	public virtual void OnTriggerEnter2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other) { }
+	public virtual void OnTriggerStay2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other) { }
+	public virtual void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot) { }
+	public virtual bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return true; }
+}
 // }

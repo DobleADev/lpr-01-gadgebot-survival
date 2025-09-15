@@ -5,46 +5,49 @@ using UnityEngine.UI;
 
 public class GadgebotSurvivalSwingTranslationProgressTest : MonoBehaviour
 {
+    [Header("Swinger Properties")]
     [SerializeField] float _autoPlaySpeed = 1;
-    [SerializeField] float _endStartOffset = 0.5f;
-    [SerializeField] float _endDistance = 2;
-    [SerializeField] float _laps = 1;
+    [SerializeField] float _swingSpeed = 1;
+    [SerializeField] float _swingDistance = 2;
+    [SerializeField] float _swingStartOffset = 0f;
+    [Header("References")]
     [SerializeField] Transform _swingerJointCenter;
     [SerializeField] Transform _swingerJointEnd;
     [SerializeField] Transform _gadgebotTransform;
+    [Header("Gadgebot Positioning")]
     [SerializeField] Vector3 _gadgebotStartPos;
     [SerializeField] Vector3 _gadgebotEndPos;
     [SerializeField] float _gadgebotSwingPositionOffset = 0.35f;
+    [Header("Gadgebot Start Jump Values")]
     [SerializeField] float _gadgebotStartJumpMaxApex = 1;
-    [SerializeField] float _gadgebotStartJumpOffset = 0;
+    // [SerializeField] float _gadgebotStartJumpOffset = 0;
     [SerializeField] float _gadgebotStartJumpDuration = 0.25f;
+    [Header("Gadgebot End Jump Values")]
     [SerializeField] float _gadgebotEndJumpMaxApex = 1;
-    [SerializeField] float _gadgebotEndJumpOffset = 0;
+    // [SerializeField] float _gadgebotEndJumpOffset = 0;
     [SerializeField] float _gadgebotEndJumpDuration = 0.25f;
     public void UpdateProgress(float value)
     {
-        // float angle = 2 * value * _laps * Mathf.PI;
-        // float angle = 2 * Mathf.Sin(Mathf.PI * value) * _laps * Mathf.PI;
-        float lapCohefficent = 2 * _laps * Mathf.PI;
+        // float angle = 2 * value * _swingSpeed * Mathf.PI;
+        // float angle = 2 * Mathf.Sin(Mathf.PI * value) * _swingSpeed * Mathf.PI;
+        float lapCohefficent = 2 * _swingSpeed * Mathf.PI;
 
         // Swinger
-        float angle = 2 * Mathf.Sin((lapCohefficent * value) - (Mathf.PI * _endStartOffset)) * 0.25f * Mathf.PI;
-        Vector3 endPosition = _endDistance * new Vector3(Mathf.Sin(angle), -Mathf.Abs(Mathf.Cos(angle)), 0);
+        float angle = 2 * Mathf.Sin((lapCohefficent * value) - (Mathf.PI * _swingStartOffset)) * 0.25f * Mathf.PI;
+        Vector3 endPosition = _swingDistance * new Vector3(Mathf.Sin(angle), -Mathf.Abs(Mathf.Cos(angle)), 0);
         _swingerJointEnd.position = _swingerJointCenter.position + endPosition;
 
         // Jump Start
         float startJumpDeltaDuration = 1 / _gadgebotStartJumpDuration;
         float gadebotStartJumpProgress = startJumpDeltaDuration * value;
-        float gadebotStartJumpPredictAngle = 2 * Mathf.Sin((lapCohefficent * _gadgebotStartJumpDuration) - (Mathf.PI * _endStartOffset)) * 0.25f * Mathf.PI;
-        Vector3 gadgebotStartJumpEndPosition = _swingerJointCenter.position + _gadgebotSwingPositionOffset * Vector3.left + (_endDistance * new Vector3(Mathf.Sin(gadebotStartJumpPredictAngle), -Mathf.Abs(Mathf.Cos(gadebotStartJumpPredictAngle)), 0));
+        float gadebotStartJumpPredictAngle = 2 * Mathf.Sin((lapCohefficent * _gadgebotStartJumpDuration) - (Mathf.PI * _swingStartOffset)) * 0.25f * Mathf.PI;
+        Vector3 gadgebotStartJumpEndPosition = _swingerJointCenter.position + _gadgebotSwingPositionOffset * Vector3.left + (_swingDistance * new Vector3(Mathf.Sin(gadebotStartJumpPredictAngle), -Mathf.Abs(Mathf.Cos(gadebotStartJumpPredictAngle)), 0));
 
         // Jump End
         float endJumpDeltaDuration = 1 / _gadgebotEndJumpDuration;
-        // float gadebotEndJumpProgress = Mathf.Clamp(gadebotStartJumpProgress - (startJumpDeltaDuration * (1 - _gadgebotEndJumpDuration)), -1, 1);
         float gadebotEndJumpProgress = Mathf.Clamp((endJumpDeltaDuration * value) - (endJumpDeltaDuration * (1 - _gadgebotEndJumpDuration)), -1, 1);
-        // float gadebotEndJumpProgress = value - (1 - _gadgebotEndJumpDuration);
-        float gadebotEndJumpPredictAngle = 2 * Mathf.Sin(lapCohefficent - (lapCohefficent * _gadgebotEndJumpDuration) - (Mathf.PI * _endStartOffset)) * 0.25f * Mathf.PI;
-        Vector3 gadgebotEndJumpEndPosition = _swingerJointCenter.position + _gadgebotSwingPositionOffset * Vector3.left + (_endDistance * new Vector3(Mathf.Sin(gadebotEndJumpPredictAngle), -Mathf.Abs(Mathf.Cos(gadebotEndJumpPredictAngle)), 0));
+        float gadebotEndJumpPredictAngle = 2 * Mathf.Sin(lapCohefficent - (lapCohefficent * _gadgebotEndJumpDuration) - (Mathf.PI * _swingStartOffset)) * 0.25f * Mathf.PI;
+        Vector3 gadgebotEndJumpEndPosition = _swingerJointCenter.position + _gadgebotSwingPositionOffset * Vector3.left + (_swingDistance * new Vector3(Mathf.Sin(gadebotEndJumpPredictAngle), -Mathf.Abs(Mathf.Cos(gadebotEndJumpPredictAngle)), 0));
 
         if (gadebotStartJumpProgress < 1)
         {
@@ -58,7 +61,6 @@ public class GadgebotSurvivalSwingTranslationProgressTest : MonoBehaviour
         {
             _gadgebotTransform.position = _swingerJointEnd.position + _gadgebotSwingPositionOffset * Vector3.left;
         }
-
     }
 
     public void StopAutoProgress()

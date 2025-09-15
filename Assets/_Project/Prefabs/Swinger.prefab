@@ -363,11 +363,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4eef1ab98b53146488ecd6f726a9d376, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _jointCenterTransform: {fileID: 6799177898025506407}
-  _jointEndTransform: {fileID: 8459542949200769119}
-  _swingSpeed: 2
-  _maxSwingAngle: 90
-  _threshold: 0.99
+  _autoPlaySpeed: 0.5
+  _swingSpeed: -1
+  _swingDistance: 1.5
+  _swingStartOffset: 0
+  _swingEdgeThreshold: 0.999
+  _jointEndJumpStartPredictionDebug: 0.82
+  _swingerJointCenter: {fileID: 6799177898025506407}
+  _swingerJointEnd: {fileID: 8459542949200769119}
+  _gadgebotSwinging: {fileID: 0}
+  _gadgebotStartPos: {x: 0, y: 0, z: 0}
+  _gadgebotEndPos: {x: 2, y: 0.5, z: 0}
+  _gadgebotSwingPositionOffset: 0.3
+  _gadgebotStartJumpMaxApex: 0.65
+  _gadgebotStartJumpOffset: 0.3
+  _gadgebotStartJumpDuration: 0.6
+  _gadgebotEndJumpMaxApex: 0.5
+  _gadgebotEndJumpOffset: 0.45
+  _gadgebotEndJumpDuration: 0.65
 --- !u!61 &3429356356490429429
 BoxCollider2D:
   m_ObjectHideFlags: 0

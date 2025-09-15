@@ -15,7 +15,7 @@ MonoBehaviour:
   _values:
     name: gadgebot-survival-level-2
     description: 
-    winPrize: 0
+    winPrize: 1200
     sceneName: gadgebot-survival-level-2
     spawnCount: 10
     goalCount: 5

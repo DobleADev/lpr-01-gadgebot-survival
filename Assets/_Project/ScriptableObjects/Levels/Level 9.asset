@@ -15,7 +15,7 @@ MonoBehaviour:
   _values:
     name: Infinite Improbabilty
     description: 
-    winPrize: 0
+    winPrize: 8000
     sceneName: gadgebot-survival-level-9
     spawnCount: 6
     goalCount: 1

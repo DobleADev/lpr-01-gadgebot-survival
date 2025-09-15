@@ -12,6 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c83905b09ca58743a4d4582f4d6dfec, type: 3}
   m_Name: Gadgebot Properties
   m_EditorClassIdentifier: 
+  speed: 1
+  gravityScale: 1
+  maxFallSpeed: 12
+  fallSpeedDeathThreshold: 9
+  walkDelayAfterGround: 0.3
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 1
   followCommand:
     _lightColor: {r: 0.17054713, g: 1, b: 0, a: 1}
   swingCommand:
@@ -26,12 +34,4 @@ MonoBehaviour:
     jumpDuration: 1
   detonateCommand:
     _lightColor: {r: 1, g: 0.43214107, b: 0, a: 1}
-    detonationBuildUpSeconds: 3
-  speed: 1
-  gravityScale: 1
-  maxFallSpeed: 12
-  fallSpeedDeathThreshold: 9
-  walkDelayAfterGround: 0.3
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 1
+    detonationBuildUpSeconds: 2

@@ -8,7 +8,7 @@ public class GadgebotSurvivalLevelData : ScriptableObject
     {
         [Header("Level Meta data")]
         public string name;
-        public string description;
+        [TextArea] public string description;
         public int winPrize;
         public string sceneName;
         [Header("Level Properties")]

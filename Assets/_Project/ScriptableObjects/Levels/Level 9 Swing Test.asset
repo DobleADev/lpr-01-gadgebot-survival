@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _values:
     name: Infinite Improbabilty Swing Test
-    description: 
+    description: 'Just for testing the gadgebot swing animations :)
+
+'
     winPrize: 0
     sceneName: gadgebot-survival-level-9-swing-test
     spawnCount: 99

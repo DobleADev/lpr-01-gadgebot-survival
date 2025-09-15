@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Level 1
   m_EditorClassIdentifier: 
   _values:
-    name: gadgebot-survival-level-1
+    name: Take two for the team
     description: 
-    winPrize: 0
+    winPrize: 1000
     sceneName: gadgebot-survival-level-1
     spawnCount: 5
     goalCount: 3
