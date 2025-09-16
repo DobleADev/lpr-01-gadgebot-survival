@@ -1,7 +1,7 @@
 {
 "companyName": "DefaultCompany",
 "productName": "lpr-01-gadgebot-survival",
-"productVersion": "1.0",
+"productVersion": "1.1",
 "dataUrl": "Gadgebot Survival Build.data.unityweb",
 "wasmCodeUrl": "Gadgebot Survival Build.wasm.code.unityweb",
 "wasmFrameworkUrl": "Gadgebot Survival Build.wasm.framework.unityweb",
