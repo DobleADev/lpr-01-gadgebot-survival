@@ -348,7 +348,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  onTeletransportation: 0
 --- !u!60 &9032466929365445652
 PolygonCollider2D:
   m_ObjectHideFlags: 0

@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 public class GenericSaveLoadManager
 {
@@ -12,11 +14,21 @@ public class GenericSaveLoadManager
     private static extern string LoadFromLocalStorage(string key);
 #endif
 
-    public void SaveGameData(string key, GadgebotSurvivalSaveData data)
+    public void SaveGameData(
+        string key,
+        string savePath,
+    GadgebotSurvivalSaveData data
+    )
     {
         string json = JsonUtility.ToJson(data);
 
-#if UNITY_WEBGL
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+        // Windows/Editor: Use binary serialization
+        BinaryFormatter formatter = new BinaryFormatter();
+        FileStream stream = new FileStream(savePath, FileMode.Create);
+        formatter.Serialize(stream, data);
+        stream.Close();
+#elif UNITY_WEBGL
         // WebGL: Use browser's localStorage via JavaScript plugin
         SaveToLocalStorage(key, json);
         // Debug.Log("Game data saved to WebGL localStorage.");
@@ -28,24 +40,42 @@ public class GenericSaveLoadManager
 #endif
     }
 
-    public GadgebotSurvivalSaveData LoadGameData(string key)
+    public GadgebotSurvivalSaveData LoadGameData(
+        string key,
+        string savePath)
     {
-        string json = null;
-
-#if UNITY_WEBGL
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+        // Windows/Editor: Load from binary file
+        if (File.Exists(savePath))
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(savePath, FileMode.Open);
+            GadgebotSurvivalSaveData data = formatter.Deserialize(stream) as GadgebotSurvivalSaveData;
+            stream.Close();
+            // Debug.Log("Game data loaded from binary file on Windows.");
+            return data;
+        }
+        else
+        {
+            // Debug.Log("No game data file found.");
+            return null;
+        }
+#elif UNITY_WEBGL
         // WebGL: Load from browser's localStorage
-        json = LoadFromLocalStorage(key);
+        string json = LoadFromLocalStorage(key);
+        if (!string.IsNullOrEmpty(json))
+        {
+            // Debug.Log("Game data loaded from WebGL localStorage.");
+            return JsonUtility.FromJson<GadgebotSurvivalSaveData>(json);
+        }
+        else
+        {
+            // Debug.Log("No game data found in localStorage.");
+            return null;
+        }
 #else
         // Other platforms: Load from PlayerPrefs
         // json = PlayerPrefs.GetString(key);
 #endif
-
-        if (!string.IsNullOrEmpty(json))
-        {
-            return JsonUtility.FromJson<GadgebotSurvivalSaveData>(json);
-        }
-
-        // Debug.Log("No game data found.");
-        return null; // Return null if no data exists
     }
 }

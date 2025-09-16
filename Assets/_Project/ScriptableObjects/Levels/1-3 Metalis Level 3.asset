@@ -10,14 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
-  m_Name: GadgebotSurvival-MetalisLevel 3
+  m_Name: 1-3 Metalis Level 3
   m_EditorClassIdentifier: 
   _values:
     name: Of Trapeze and Teleporters
     sceneName: gadgebot-survival-metalis-level-3
     description: "Swing for great justice, and activate the teleporter! \nBut don't
       fall, for gravity is a harsh mistress."
+    locked: 1
+    hided: 0
+    official: 1
     spawnCount: 10
     goalCount: 5
     spawnInterval: 3.7
-    locked: 1
+    thumbnail: {fileID: 0}
+    ost: {fileID: 8300000, guid: 03c99c7567fead145a3ab040dee0031e, type: 3}

@@ -13,32 +13,39 @@ public class GadgebotSurvivalTeletransporter : MonoBehaviour
     public UnityEvent onTeleportEnd;
     public Coroutine process;
     public bool onTeletransportation { get; private set; }
+    private GadgebotSurvivalGadgebotController _gadgebotTeletransporting;
+    public bool canBeWaitedFor { get; private set; } = true;
+
     public bool RequestTeleport(GadgebotSurvivalGadgebotController gadgebot)
     {
-        if (onTeletransportation || gadgebot == null) return false;
-        onTeleportRequested?.Invoke(gadgebot);
-        process = StartCoroutine(TeletransportationProcess(gadgebot));
+        if (onTeletransportation || gadgebot == null || _gadgebotTeletransporting != null) return false;
+        _gadgebotTeletransporting = gadgebot;
+        onTeleportRequested?.Invoke(_gadgebotTeletransporting);
+        process = StartCoroutine(TeletransportationProcess());
         return true;
     }
 
-    IEnumerator TeletransportationProcess(GadgebotSurvivalGadgebotController gadgebot)
+    IEnumerator TeletransportationProcess()
     {
         onTeletransportation = true;
+        canBeWaitedFor = false;
         // Debug.Log("TP WAIT");
-		yield return new WaitForSeconds(teletransportationDuration);
+        yield return new WaitForSeconds(teletransportationDuration);
         // Debug.Log("TP START");
 
-        gadgebot.gameObject.SetActive(false);
+        _gadgebotTeletransporting.gameObject.SetActive(false);
         onTeleportStart?.Invoke();
 		yield return new WaitForSeconds(teleportTransitionDuration * 0.5f);
 
         onTeleportEnd?.Invoke();
+        canBeWaitedFor = true;
 		yield return new WaitForSeconds(teleportTransitionDuration * 0.5f);
         // Debug.Log("TP END");
 
-        gadgebot.gameObject.SetActive(true);
-        onTeletransportation = false;
-		gadgebot.transform.position = endPoint.TransformPoint(endPointOffset);
+        _gadgebotTeletransporting.gameObject.SetActive(true);
+		_gadgebotTeletransporting.transform.position = endPoint.TransformPoint(endPointOffset);
+        onTeletransportation = false; 
+        _gadgebotTeletransporting = null;
     }
 
     void OnDrawGizmos()

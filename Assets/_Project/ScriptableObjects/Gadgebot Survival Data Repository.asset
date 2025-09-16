@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4203607c6b7e67845bbcbed7fbee337f, type: 3}
   m_Name: Gadgebot Survival Data Repository
   m_EditorClassIdentifier: 
+  _windowsSaveDataPath: /savedata.bin
   _webSaveDataKey: dobleadev_gadgebot_survival_savedata
   _currentData:
     levelProgress: []

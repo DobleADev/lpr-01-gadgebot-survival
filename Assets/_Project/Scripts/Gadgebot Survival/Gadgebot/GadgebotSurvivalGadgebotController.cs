@@ -20,6 +20,7 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 	public Collider2D ground { get; private set; }
 	public bool teletransporting { get; private set; }
 	public GadgebotSurvivalSwinger swingToWait { get; private set; }
+	public GadgebotSurvivalTeletransporter teletransporterToWait { get; private set; }
 	public bool swinging { get; private set; }
 	public bool bridgeActivated { get; private set; }
 	// public float walkDelayAfterGround = 0.3f;
@@ -52,10 +53,10 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 
 	void OnPhysicsCollision2D(Collider2D collider)
 	{
-		if (collider.TryGetComponent(out GadgebotSurvivalDirectionBlock directionBlock))
-		{
-			direction = directionBlock.direction;
-		}
+		// if (collider.TryGetComponent(out GadgebotSurvivalDirectionBlock directionBlock))
+		// {
+		// 	direction = directionBlock.direction;
+		// }
 
 		if (collider.TryGetComponent(out GadgebotSurvivalGadgebotController gadgebot))
 		{
@@ -122,6 +123,11 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 		if (isGrounded)
 		{
 			ground = (1 << groundCollider[0].gameObject.layer) == properties.groundLayer ? groundCollider[0] : null;
+
+			if (groundCollider[0].TryGetComponent(out GadgebotSurvivalDirectionBlock directionBlock))
+			{
+				direction = directionBlock.direction;
+			}
 		}
 
 		if (isGrounded)
@@ -263,6 +269,18 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 		walk = true;
 	}
 
+	public void StartWaitingForTeletransporter(GadgebotSurvivalTeletransporter teletransporter)
+	{
+		teletransporterToWait = teletransporter;
+		walk = false;
+	}
+
+	public void CancelWaitingForTeletransporter()
+	{
+		teletransporterToWait = null;
+		walk = true;
+	}
+
 	public IEnumerator SwingProcess(GadgebotSurvivalSwinger swinger)
 	{
 		CancelWaitingForSwinger();
@@ -397,17 +415,42 @@ public class GadgebotSwingCommand : GadgebotState
 public class GadgebotElectrifyCommand : GadgebotState
 {
 	// public override void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) {}
-	// public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot) {}
-	// public override void FixedUpdate(GadgebotSurvivalGadgebotController gadgebot) {}
+	public override void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot)
+	{
+		gadgebot.CancelWaitingForTeletransporter();
+	}
+
+	public override void FixedUpdate(GadgebotSurvivalGadgebotController gadgebot)
+	{
+		if (!gadgebot.isGrounded
+			|| gadgebot.teletransporterToWait == null
+			|| !gadgebot.teletransporterToWait.RequestTeleport(gadgebot)) return;
+		gadgebot.teletransporterToWait.StartCoroutine(gadgebot.TeletransportationProcess(gadgebot.teletransporterToWait));
+	}
+	public override void OnTriggerEnter2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other)
+	{
+		RequestTeletransport(gadgebot, other);
+	}
 	public override void OnTriggerStay2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other)
+	{
+		RequestTeletransport(gadgebot, other);
+	}
+	void RequestTeletransport(GadgebotSurvivalGadgebotController gadgebot, Collider2D other)
 	{
 		if (other.TryGetComponent(out GadgebotSurvivalTeletransporter teletransporter))
 		{
 			// RequestTeleport(gadgebot, teletransporter);
-			if (!teletransporter.RequestTeleport(gadgebot) || !gadgebot.isGrounded) return;
-			teletransporter.StartCoroutine(gadgebot.TeletransportationProcess(teletransporter));
+			// if (!teletransporter.RequestTeleport(gadgebot) || !gadgebot.isGrounded) return;
+			// teletransporter.StartCoroutine(gadgebot.TeletransportationProcess(teletransporter));
+			if (
+				!gadgebot.isGrounded
+				|| gadgebot.teletransporting
+				|| gadgebot.teletransporterToWait != null
+				|| !teletransporter.canBeWaitedFor) return;
+			gadgebot.StartWaitingForTeletransporter(teletransporter);
 		}
 	}
+
 	// public override void OnDrawGizmos(GadgebotSurvivalGadgebotController gadgebot) {}
 	public override bool CanChangeCommand(GadgebotSurvivalGadgebotController gadgebot) { return !gadgebot.teletransporting; }
 }

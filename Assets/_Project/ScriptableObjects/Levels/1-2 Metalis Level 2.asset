@@ -10,14 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
-  m_Name: GadgebotSurvival-MetalisLevel 1
+  m_Name: 1-2 Metalis Level 2
   m_EditorClassIdentifier: 
   _values:
-    name: Take two for the team
-    sceneName: gadgebot-survival-metalis-level-1
-    description: Gadgebot Survival - Lead your Gadgebots to the house at the end
-      of the challenge. Issue commands with the TAB key.
-    spawnCount: 5
-    goalCount: 3
-    spawnInterval: 3.7
+    name: Bridge The Gap
+    sceneName: gadgebot-survival-metalis-level-2
+    description: Command your Gadgebots and build some bridges before they fall to
+      their death.
     locked: 0
+    hided: 0
+    official: 1
+    spawnCount: 10
+    goalCount: 5
+    spawnInterval: 3.7
+    thumbnail: {fileID: 0}
+    ost: {fileID: 8300000, guid: 03c99c7567fead145a3ab040dee0031e, type: 3}

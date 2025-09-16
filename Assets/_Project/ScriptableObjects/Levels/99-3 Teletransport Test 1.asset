@@ -10,14 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
-  m_Name: GadgebotSurvival-MetalisLevel 2
+  m_Name: 99-3 Teletransport Test 1
   m_EditorClassIdentifier: 
   _values:
-    name: Bridge The Gap
-    sceneName: gadgebot-survival-metalis-level-2
-    description: Command your Gadgebots and build some bridges before they fall to
-      their death.
-    spawnCount: 10
-    goalCount: 5
+    name: Teletransport Test
+    sceneName: gadgebot-survival-teletransport-test-level-1
+    description: Just for testing bugs.
+    spawnCount: 8
+    goalCount: 8
     spawnInterval: 3.7
     locked: 0
+    hided: 0
+    secret: 1

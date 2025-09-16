@@ -23,4 +23,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/Levels/gadgebot-survival-dayni-moon-level-9-swing-test.unity
     guid: 5bc0c75ce75d47c43b3ebb85f0ffb00b
+  - enabled: 1
+    path: Assets/_Project/Scenes/Levels/gadgebot-survival-winning-test-level.unity
+    guid: 498fa88043f9e1c42b3178fa4a1d1ea9
+  - enabled: 1
+    path: Assets/_Project/Scenes/Levels/gadgebot-survival-teletransport-test-level-1.unity
+    guid: 8affbce8ea5864940afee05cbcbbf120
   m_configObjects: {}

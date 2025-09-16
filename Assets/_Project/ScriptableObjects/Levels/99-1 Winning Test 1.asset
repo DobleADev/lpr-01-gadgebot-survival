@@ -10,14 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
-  m_Name: GadgebotSurvival-MetalisLevel 5
+  m_Name: 99-1 Winning Test 1
   m_EditorClassIdentifier: 
   _values:
-    name: Nigh Imposible
-    sceneName: gadgebot-survival-metalis-level-5
-    description: The last challenge is a doozy, but you get some awesome Sludge armor
-      if you win! (Not applicable in this demo)
-    spawnCount: 10
-    goalCount: 5
+    name: Winning Test
+    sceneName: gadgebot-survival-winning-test-level
+    description: You must win :')
+    spawnCount: 1
+    goalCount: 1
     spawnInterval: 3.7
-    locked: 1
+    locked: 0
+    hided: 0
+    secret: 1

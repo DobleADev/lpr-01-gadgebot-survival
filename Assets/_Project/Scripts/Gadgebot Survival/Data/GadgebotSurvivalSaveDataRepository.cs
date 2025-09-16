@@ -5,25 +5,28 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Gadgebot Survival Data Repository", menuName = "Scriptable Object/Gadgebot Survival Save Data Repository")]
 public class GadgebotSurvivalSaveDataRepository : ScriptableObject
 {
+    [SerializeField] private string _windowsSaveDataPath = "/savedata.bin";
     [SerializeField] private string _webSaveDataKey = "dobleadev_gadgebot_survival_savedata";
     [SerializeField] private GadgebotSurvivalSaveData _currentData = new GadgebotSurvivalSaveData();
     private GenericSaveLoadManager _saveManager = new GenericSaveLoadManager();
     // public GadgebotSurvivalSaveData currentData { get { return _currentData; } }
     
-    [ContextMenu("Reset All Progress")]
-    public void ResetAllProgress()
+    [ContextMenu("Reset Game Data")]
+    public void ResetGameData()
     {
         _currentData = new GadgebotSurvivalSaveData();
     }
 
+    [ContextMenu("Save Game Data")]
     public void SaveGame()
     {
-        _saveManager.SaveGameData(_webSaveDataKey, _currentData);
+        _saveManager.SaveGameData(_webSaveDataKey, _windowsSaveDataPath, _currentData);
     }
 
+    [ContextMenu("Load Game Data")]
     public void LoadGame()
     {
-        var loadedGameData = _saveManager.LoadGameData(_webSaveDataKey);
+        var loadedGameData = _saveManager.LoadGameData(_webSaveDataKey, _windowsSaveDataPath);
         if (loadedGameData == null) return;
         _currentData = loadedGameData;
     }

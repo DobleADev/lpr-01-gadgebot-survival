@@ -8,6 +8,8 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 	[SerializeField] bool _lockCursorOnPlay = true;
 	public GadgebotSurvivalLevelManager level { get; private set; }
 	public bool gameRunning { get; private set; }
+	public UnityEvent onStart;
+	public UnityEvent onQuit;
 	public UnityEvent onWin;
 	public UnityEvent onLose;
 
@@ -76,6 +78,7 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 		level.goal.onCountUpdated.AddListener(CheckWin);
 		level.goal.onCountUpdated.AddListener((count) => CheckLose());
 		level.spawner.onSpawn.AddListener(OnGadgebotSpawned);
+		onStart?.Invoke();
 		StartCoroutine(level.SpawnLoop());
 	}
 
@@ -83,6 +86,7 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 	{
 		Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+		onQuit?.Invoke();
 		_loader.UnloadGame();
 	}
 }

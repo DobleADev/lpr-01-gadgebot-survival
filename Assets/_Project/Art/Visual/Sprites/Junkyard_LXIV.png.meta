@@ -62,10 +62,10 @@ TextureImporter:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 4096
-    resizeAlgorithm: 0
+    resizeAlgorithm: 1
     textureFormat: -1
     textureCompression: 3
-    compressionQuality: 50
+    compressionQuality: 25
     crunchedCompression: 1
     allowsAlphaSplitting: 0
     overridden: 0
@@ -74,10 +74,10 @@ TextureImporter:
   - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 4096
-    resizeAlgorithm: 0
+    resizeAlgorithm: 1
     textureFormat: -1
     textureCompression: 3
-    compressionQuality: 50
+    compressionQuality: 25
     crunchedCompression: 1
     allowsAlphaSplitting: 0
     overridden: 0
@@ -86,10 +86,22 @@ TextureImporter:
   - serializedVersion: 3
     buildTarget: Android
     maxTextureSize: 4096
-    resizeAlgorithm: 0
+    resizeAlgorithm: 1
     textureFormat: -1
     textureCompression: 3
-    compressionQuality: 50
+    compressionQuality: 25
+    crunchedCompression: 1
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 4096
+    resizeAlgorithm: 1
+    textureFormat: -1
+    textureCompression: 3
+    compressionQuality: 25
     crunchedCompression: 1
     allowsAlphaSplitting: 0
     overridden: 0
