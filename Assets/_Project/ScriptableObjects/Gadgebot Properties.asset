@@ -17,21 +17,23 @@ MonoBehaviour:
   maxFallSpeed: 12
   fallSpeedDeathThreshold: 9
   walkDelayAfterGround: 0.3
+  groundCheckOrigin: {x: 0, y: -0.5}
+  groundCheckSize: {x: 0.7, y: 0.1}
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
   followCommand:
-    _lightColor: {r: 0.17054713, g: 1, b: 0, a: 1}
+    _lightColor: {r: 0.40784314, g: 2.9960785, b: 0, a: 1}
   swingCommand:
-    _lightColor: {r: 1, g: 1, b: 1, a: 1}
+    _lightColor: {r: 2.9960785, g: 2.9960785, b: 2.9960785, a: 1}
   electrifyCommand:
-    _lightColor: {r: 0, g: 0.7868185, b: 1, a: 1}
+    _lightColor: {r: 0, g: 2.3469281, b: 2.9960785, a: 1}
   bridgeCommand:
-    _lightColor: {r: 0.89143467, g: 0, b: 1, a: 1}
+    _lightColor: {r: 2.9960785, g: 0, b: 2.9461432, a: 1}
     bridgeBlockPrefab: {fileID: 6222878110342831697, guid: 53684c4a8b43e2a44837678b9b8f8c3f,
       type: 3}
     jumpMaxApex: 1
     jumpDuration: 1
   detonateCommand:
-    _lightColor: {r: 1, g: 0.43214107, b: 0, a: 1}
+    _lightColor: {r: 2.9960785, g: 0.7490196, b: 0, a: 1}
     detonationBuildUpSeconds: 2

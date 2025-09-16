@@ -6,21 +6,21 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/_Project/Scenes/Other/gadgebot-survival-tests.unity
-    guid: 59f97bcb8a390b546ad5f4eee703e240
+    path: Assets/_Project/Scenes/Other/gadgebot-survival.unity
+    guid: 0a93a7071c3d50847b4056bcb30b6a29
   - enabled: 1
     path: Assets/_Project/Scenes/Other/gadgebot-survival-setup.unity
     guid: b95f3eed634165744b775a4d2a7b6e62
   - enabled: 1
-    path: Assets/_Project/Scenes/Levels/gadgebot-survival-level-1.unity
+    path: Assets/_Project/Scenes/Levels/gadgebot-survival-metalis-level-1.unity
     guid: 5f21ce83d6c12c54e83c779a25dce58f
   - enabled: 1
-    path: Assets/_Project/Scenes/Levels/gadgebot-survival-level-2.unity
+    path: Assets/_Project/Scenes/Levels/gadgebot-survival-metalis-level-2.unity
     guid: 7832bfdc4c0512d48bdb95295aeb573c
   - enabled: 1
-    path: Assets/_Project/Scenes/Levels/gadgebot-survival-level-9.unity
+    path: Assets/_Project/Scenes/Levels/gadgebot-survival-dayni-moon-level-9.unity
     guid: e57fb9ba255d24544bf84c59bbd1aa64
   - enabled: 1
-    path: Assets/_Project/Scenes/Levels/gadgebot-survival-level-9-swing-test.unity
+    path: Assets/_Project/Scenes/Levels/gadgebot-survival-dayni-moon-level-9-swing-test.unity
     guid: 5bc0c75ce75d47c43b3ebb85f0ffb00b
   m_configObjects: {}

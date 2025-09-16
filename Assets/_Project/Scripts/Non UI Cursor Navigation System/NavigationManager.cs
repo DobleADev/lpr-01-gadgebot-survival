@@ -32,12 +32,12 @@ public class NavigationManager : MonoBehaviour
         commandMenu.onMenuClose.RemoveListener(OnCommandMenuClose);
     }
 
-    void Start()
-    {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-        // EventSystem.current.sendNavigationEvents = false;
-    }
+    // void Start()
+    // {
+    //     Cursor.visible = false;
+    //     Cursor.lockState = CursorLockMode.Locked;
+    //     // EventSystem.current.sendNavigationEvents = false;
+    // }
 
     public void AddSelectable(GadgebotSurvivalGadgebotController gadgebot)
     {

@@ -130,13 +130,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _properties: {fileID: 11400000, guid: e049d59214c08e446a9ad345c38896dd, type: 2}
   physics: {fileID: 50091841157774126}
-  boxCollider: {fileID: 61559063345470714}
   lightRenderer: {fileID: 5170623973620278568}
-  direction: 1
-  walk: 1
-  physicsEnabled: 1
-  canSelect: 1
-  onDestroy:
+  _onDestroy:
     m_PersistentCalls:
       m_Calls: []
 --- !u!50 &50091841157774126
@@ -337,8 +332,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4323006706411967029}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.1, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.4, z: 0.5}
+  m_LocalPosition: {x: 0, y: -0.15, z: 0}
+  m_LocalScale: {x: 0.4, y: 0.35, z: 0.4}
   m_Children: []
   m_Father: {fileID: 8799530561280570583}
   m_RootOrder: 1
@@ -449,8 +444,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5995914678950037541}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.35, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalPosition: {x: 0, y: 0.25, z: 0}
+  m_LocalScale: {x: 0.125, y: 0.125, z: 0.125}
   m_Children: []
   m_Father: {fileID: 8799530561280570583}
   m_RootOrder: 2

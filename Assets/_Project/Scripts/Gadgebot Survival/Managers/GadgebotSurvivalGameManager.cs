@@ -5,7 +5,8 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 {
 	[SerializeField] GadgebotSurvivalGameLoader _loader;
 	[SerializeField] NavigationManager _navManager;
-	private GadgebotSurvivalLevelManager _level;
+	[SerializeField] bool _lockCursorOnPlay = true;
+	public GadgebotSurvivalLevelManager level { get; private set; }
 	public bool gameRunning { get; private set; }
 	public UnityEvent onWin;
 	public UnityEvent onLose;
@@ -20,11 +21,11 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 		if (_loader != null)
 		{
 			if (_loader.onLoading) _loader.Reset();
-			else
+			else if (gameRunning)
 			{
-				_level.goal.onCountUpdated.RemoveListener(CheckWin);
-				_level.goal.onCountUpdated.RemoveListener((count) => CheckLose());
-				_level.spawner.onSpawn.RemoveListener(OnGadgebotSpawned);
+				level.goal.onCountUpdated.RemoveListener(CheckWin);
+				level.goal.onCountUpdated.RemoveListener((count) => CheckLose());
+				level.spawner.onSpawn.RemoveListener(OnGadgebotSpawned);
 			}
         }
 		
@@ -52,28 +53,36 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 
 	void CheckLose()
 	{
-		if (!gameRunning || _navManager.selectables.Count != 0 || _level.spawner.count != 0) return;
+		if (!gameRunning || _navManager.selectables.Count != 0 || level.spawner.count != 0) return;
 		gameRunning = false;
 		onLose?.Invoke();
 	}
 
 	public void InitGame(GadgebotSurvivalLevelManager levelManager)
-    {
-		_level = levelManager;
+	{
+		level = levelManager;
+		if (_lockCursorOnPlay)
+		{
+			Cursor.visible = false;
+        	Cursor.lockState = CursorLockMode.Locked;
+		}
+		
     }
 
 	public void StartGame()
 	{
 		if (gameRunning) return;
 		gameRunning = true;
-		_level.goal.onCountUpdated.AddListener(CheckWin);
-		_level.goal.onCountUpdated.AddListener((count) => CheckLose());
-		_level.spawner.onSpawn.AddListener(OnGadgebotSpawned);
-		StartCoroutine(_level.SpawnLoop());
+		level.goal.onCountUpdated.AddListener(CheckWin);
+		level.goal.onCountUpdated.AddListener((count) => CheckLose());
+		level.spawner.onSpawn.AddListener(OnGadgebotSpawned);
+		StartCoroutine(level.SpawnLoop());
 	}
 
 	public void QuitGame()
 	{
+		Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
 		_loader.UnloadGame();
 	}
 }

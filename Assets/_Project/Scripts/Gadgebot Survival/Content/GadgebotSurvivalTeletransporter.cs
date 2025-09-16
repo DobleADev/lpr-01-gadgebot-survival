@@ -15,7 +15,7 @@ public class GadgebotSurvivalTeletransporter : MonoBehaviour
     public bool onTeletransportation { get; private set; }
     public bool RequestTeleport(GadgebotSurvivalGadgebotController gadgebot)
     {
-        if (onTeletransportation) return false;
+        if (onTeletransportation || gadgebot == null) return false;
         onTeleportRequested?.Invoke(gadgebot);
         process = StartCoroutine(TeletransportationProcess(gadgebot));
         return true;

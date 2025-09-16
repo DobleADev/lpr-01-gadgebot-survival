@@ -8,13 +8,14 @@ public class GadgebotSurvivalLevelData : ScriptableObject
     {
         [Header("Level Meta data")]
         public string name;
-        [TextArea] public string description;
-        public int winPrize;
         public string sceneName;
+        // public int winPrize;
+        [TextArea] public string description;
         [Header("Level Properties")]
         public int spawnCount;
         public int goalCount;
         public float spawnInterval;
+        public bool locked;
     }
 
     [SerializeField] LevelDataValues _values;

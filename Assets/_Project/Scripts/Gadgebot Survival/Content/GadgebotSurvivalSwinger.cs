@@ -72,6 +72,7 @@ public class GadgebotSurvivalSwinger : MonoBehaviour
             // Swinger
             jointProgress = 2 * Mathf.Sin((lapCohefficent * timeElapsed) - (Mathf.PI * _swingStartOffset)) * 0.25f * Mathf.PI;
             Vector3 endPosition = _swingDistance * new Vector3(Mathf.Sin(jointProgress), -Mathf.Abs(Mathf.Cos(jointProgress)), 0);
+            _swingerJointCenter.rotation = Quaternion.AngleAxis(jointProgress * -Mathf.Rad2Deg, Vector3.back);
             _swingerJointEnd.position = _swingerJointCenter.position + endPosition;
 
             float swingEdgeBound = _swingEdgeThreshold - Time.deltaTime;

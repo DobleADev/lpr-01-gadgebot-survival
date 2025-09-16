@@ -7,7 +7,7 @@ public class GadgebotSurvivalLevelManager : MonoBehaviour
     [SerializeField] GadgebotSurvivalSpawner _spawner;
     [SerializeField] GadgebotSurvivalGoal _goal;
     [SerializeField] float _startSpawnInterval = 2;
-    private GadgebotSurvivalLevelData _levelData;
+    public GadgebotSurvivalLevelData levelData { get; private set; }
     public GadgebotSurvivalSpawner spawner { get { return _spawner; } }
     public GadgebotSurvivalGoal goal { get { return _goal; } }
 
@@ -26,7 +26,7 @@ public class GadgebotSurvivalLevelManager : MonoBehaviour
 
     public void InitLevel(GadgebotSurvivalLevelData levelData)
     {
-        _levelData = levelData;
+        this.levelData = levelData;
         _spawner.count = levelData.values.spawnCount;
         _goal.count = levelData.values.goalCount;
     }
@@ -41,7 +41,7 @@ public class GadgebotSurvivalLevelManager : MonoBehaviour
 			spawner.Spawn();
 			if (!firstSpawned)
 			{
-				internalSpawnInterval = _levelData.values.spawnInterval;
+				internalSpawnInterval = levelData.values.spawnInterval;
 				firstSpawned = true;
 			}
 		}

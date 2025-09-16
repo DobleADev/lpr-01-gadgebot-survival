@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
-  m_Name: Level 9 Swing Test
+  m_Name: GadgebotSurvival-DayniMoonLevel 5 Swing Test
   m_EditorClassIdentifier: 
   _values:
     name: Infinite Improbabilty Swing Test
+    sceneName: gadgebot-survival-dayni-moon-level-9-swing-test
     description: 'Just for testing the gadgebot swing animations :)
 
 '
-    winPrize: 0
-    sceneName: gadgebot-survival-level-9-swing-test
     spawnCount: 99
     goalCount: 99
     spawnInterval: 5
+    locked: 0

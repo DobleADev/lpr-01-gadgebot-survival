@@ -10,7 +10,7 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 	[SerializeField] GadgebotSurvivalGadgebotData _properties;
 	public GadgebotSurvivalGadgebotData properties { get { return _properties; } }
 	[SerializeField] Rigidbody2D physics;
-	[SerializeField] BoxCollider2D boxCollider;
+	// [SerializeField] BoxCollider2D boxCollider;
 	[SerializeField] MeshRenderer lightRenderer;
 	float timeAfterGrounded;
 	GadgebotState currentCommand;
@@ -100,7 +100,7 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 	void OnDrawGizmos()
 	{
 		Gizmos.color = new Color(1, 1, 1, 0.4f);
-		Gizmos.DrawWireCube(physics.position + new Vector2(0, -0.48f), new Vector2(boxCollider.size.x, 0.01f));
+		Gizmos.DrawWireCube(physics.position + properties.groundCheckOrigin, properties.groundCheckSize);
 		if (currentCommand != null) currentCommand.OnDrawGizmos(this);
 	}
 
@@ -118,7 +118,7 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 		Collider2D[] groundCollider = new Collider2D[1];
 		ContactFilter2D groundFilter = new ContactFilter2D();
 		groundFilter.useTriggers = false;
-		isGrounded = Physics2D.OverlapBox(physics.position + new Vector2(0, -0.48f), new Vector2(boxCollider.size.x, 0.01f), 0, groundFilter, groundCollider) > 0;
+		isGrounded = Physics2D.OverlapBox(physics.position + properties.groundCheckOrigin, properties.groundCheckSize, 0, groundFilter, groundCollider) > 0;
 		if (isGrounded)
 		{
 			ground = (1 << groundCollider[0].gameObject.layer) == properties.groundLayer ? groundCollider[0] : null;
@@ -404,7 +404,7 @@ public class GadgebotElectrifyCommand : GadgebotState
 		if (other.TryGetComponent(out GadgebotSurvivalTeletransporter teletransporter))
 		{
 			// RequestTeleport(gadgebot, teletransporter);
-			if (!teletransporter.RequestTeleport(gadgebot)) return;
+			if (!teletransporter.RequestTeleport(gadgebot) || !gadgebot.isGrounded) return;
 			teletransporter.StartCoroutine(gadgebot.TeletransportationProcess(teletransporter));
 		}
 	}
@@ -464,7 +464,7 @@ public class GadgebotDetonateCommand : GadgebotState
 }
 public abstract class GadgebotState
 {
-	[SerializeField] Color _lightColor = new Color(1, 1, 1, 1);
+	[SerializeField, ColorUsage(true, true)] Color _lightColor = new Color(1, 1, 1, 1);
 	public Color lightColor { get { return _lightColor; } }
 	public virtual void OnCommandEnter(GadgebotSurvivalGadgebotController gadgebot) { }
 	public virtual void OnCommandExit(GadgebotSurvivalGadgebotController gadgebot) { }

@@ -10,13 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
-  m_Name: Level 1
+  m_Name: GadgebotSurvival-MetalisLevel 5
   m_EditorClassIdentifier: 
   _values:
-    name: Take two for the team
-    description: 
-    winPrize: 1000
-    sceneName: gadgebot-survival-level-1
-    spawnCount: 5
-    goalCount: 3
+    name: Nigh Imposible
+    sceneName: gadgebot-survival-metalis-level-5
+    description: The last challenge is a doozy, but you get some awesome Sludge armor
+      if you win! (Not applicable in this demo)
+    spawnCount: 10
+    goalCount: 5
     spawnInterval: 3.7
+    locked: 1
