@@ -44,8 +44,9 @@ public class GadgebotSurvivalTeletransporter : MonoBehaviour
 
         _gadgebotTeletransporting.gameObject.SetActive(true);
 		_gadgebotTeletransporting.transform.position = endPoint.TransformPoint(endPointOffset);
-        onTeletransportation = false; 
+        _gadgebotTeletransporting.EndTeletransportation();
         _gadgebotTeletransporting = null;
+        onTeletransportation = false;
     }
 
     void OnDrawGizmos()

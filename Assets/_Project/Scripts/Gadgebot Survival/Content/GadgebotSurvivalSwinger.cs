@@ -161,6 +161,7 @@ public class GadgebotSurvivalSwinger : MonoBehaviour
                     if (_gadgebotProgress >= _gadgebotEndJumpDuration)
                     {
                         _gadgebotSwinging.transform.position = transform.TransformPoint(_gadgebotEndPos);
+                        _gadgebotSwinging.EndSwing();
                         onSwinging = false;
                         _gadgebotSwinging = null;
                     }

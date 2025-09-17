@@ -281,38 +281,66 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 		walk = true;
 	}
 
-	public IEnumerator SwingProcess(GadgebotSurvivalSwinger swinger)
+	// public IEnumerator SwingProcess(GadgebotSurvivalSwinger swinger)
+	// {
+	// 	CancelWaitingForSwinger();
+	// 	physicsEnabled = false;
+	// 	swinging = true;
+	// 	while (swinger.onSwinging)
+	// 	{
+	// 		// Debug.Log("Waiting for teleport end.. " + Time.time);
+	// 		yield return null;
+	// 	}
+	// 	physicsEnabled = true;
+	// 	swinging = false;
+	// 	ChangeCommandState(properties.followCommand);
+	// }
+
+	public void StartSwing()
 	{
 		CancelWaitingForSwinger();
 		physicsEnabled = false;
 		swinging = true;
-		while (swinger.onSwinging)
-		{
-			// Debug.Log("Waiting for teleport end.. " + Time.time);
-			yield return null;
-		}
+	}
+
+	public void EndSwing()
+	{
 		physicsEnabled = true;
 		swinging = false;
 		ChangeCommandState(properties.followCommand);
 	}
 
-	public IEnumerator TeletransportationProcess(GadgebotSurvivalTeletransporter teletransporter)
+	// public IEnumerator TeletransportationProcess(GadgebotSurvivalTeletransporter teletransporter)
+	// {
+	//  CancelWaitingForTeletransporter();
+	// 	// Debug.Log("Local Wait Started " + Time.time);
+	// 	walk = false;
+	// 	teletransporting = true;
+
+	// 	// yield return teletransporter.process;
+	// 	while (teletransporter.onTeletransportation)
+	// 	{
+	// 		// Debug.Log("Waiting for teleport end.. " + Time.time);
+	// 		yield return null;
+	// 	}
+	// 	// Debug.Log("Teleport end " + Time.time);
+	// 	walk = true;
+	// 	teletransporting = false;
+	// 	ChangeCommandState(properties.followCommand);
+	// }
+
+	public void StartTeletransportation()
 	{
-		// Debug.Log("Local Wait Started " + Time.time);
+		CancelWaitingForTeletransporter();
 		walk = false;
 		teletransporting = true;
+	}
 
-		// yield return teletransporter.process;
-		while (teletransporter.onTeletransportation)
-		{
-			// Debug.Log("Waiting for teleport end.. " + Time.time);
-			yield return null;
-		}
-		// Debug.Log("Teleport end " + Time.time);
+	public void EndTeletransportation()
+	{
 		walk = true;
 		teletransporting = false;
 		ChangeCommandState(properties.followCommand);
-
 	}
 
 	IEnumerator ExplosionProcess(GadgebotDetonateCommand detonateCommand)
@@ -366,10 +394,11 @@ public class GadgebotSwingCommand : GadgebotState
 		if (!gadgebot.swinging)
 		{
 			// REQUEST SWING
-			if (!gadgebot.isGrounded 
+			if (!gadgebot.isGrounded
 			|| gadgebot.swingToWait == null
 			|| !gadgebot.swingToWait.RequestSwing(gadgebot)) return;
-			gadgebot.swingToWait.StartCoroutine(gadgebot.SwingProcess(gadgebot.swingToWait));
+			// gadgebot.swingToWait.StartCoroutine(gadgebot.SwingProcess(gadgebot.swingToWait));
+			gadgebot.StartSwing();
 		}
 	}
 	public override void OnTriggerEnter2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other)
@@ -425,7 +454,8 @@ public class GadgebotElectrifyCommand : GadgebotState
 		if (!gadgebot.isGrounded
 			|| gadgebot.teletransporterToWait == null
 			|| !gadgebot.teletransporterToWait.RequestTeleport(gadgebot)) return;
-		gadgebot.teletransporterToWait.StartCoroutine(gadgebot.TeletransportationProcess(gadgebot.teletransporterToWait));
+		// gadgebot.teletransporterToWait.StartCoroutine(gadgebot.TeletransportationProcess(gadgebot.teletransporterToWait));
+		gadgebot.StartTeletransportation();
 	}
 	public override void OnTriggerEnter2D(GadgebotSurvivalGadgebotController gadgebot, Collider2D other)
 	{

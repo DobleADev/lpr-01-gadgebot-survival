@@ -18,9 +18,11 @@ MonoBehaviour:
     description: 'Just for testing the gadgebot swing animations :)
 
 '
-    spawnCount: 99
-    goalCount: 99
-    spawnInterval: 5
     locked: 0
     hided: 0
-    secret: 1
+    official: 0
+    spawnCount: 8
+    goalCount: 8
+    spawnInterval: 2.7
+    thumbnail: {fileID: 0}
+    ost: {fileID: 0}
