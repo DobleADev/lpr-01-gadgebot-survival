@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Detonate
   m_EditorClassIdentifier: 
   _command: 3
-  _sprite: {fileID: 21300000, guid: f82dfc5fc3c5a8f4080a3550427019c8, type: 3}
+  _sprite: {fileID: 21300000, guid: 1735525861c6333438151ba4efd34bbd, type: 3}

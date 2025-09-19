@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Swing
   m_EditorClassIdentifier: 
   _command: 0
-  _sprite: {fileID: 21300000, guid: 874d8401331ede14087e8d8d486ddda6, type: 3}
+  _sprite: {fileID: 21300000, guid: 2b4a4b2daf9c912418ba34c133f7e8f3, type: 3}
