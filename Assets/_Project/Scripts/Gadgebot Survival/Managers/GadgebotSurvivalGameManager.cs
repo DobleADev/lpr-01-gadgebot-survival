@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class GadgebotSurvivalGameManager : MonoBehaviour
 {
@@ -9,8 +11,11 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 	public bool gameRunning { get; private set; }
 	public UnityEvent onStart;
 	public UnityEvent onQuit;
+	public UnityEvent onRestartProcessStart;
+	public UnityEvent onRestartProcessEnd;
 	public UnityEvent onWin;
 	public UnityEvent onLose;
+	Coroutine _spawnLoopCoroutine;
 
 	void Awake()
 	{
@@ -66,18 +71,60 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 
 	public void StartGame()
 	{
-		if (gameRunning) return;
+		if (gameRunning)
+		{
+			return;
+		}
 		gameRunning = true;
 		level.goal.onCountUpdated.AddListener(CheckWin);
 		level.goal.onCountUpdated.AddListener((count) => CheckLose());
 		level.spawner.onSpawn.AddListener(OnGadgebotSpawned);
 		onStart?.Invoke();
-		StartCoroutine(level.SpawnLoop());
+		_spawnLoopCoroutine = StartCoroutine(level.SpawnLoop());
 	}
 
 	public void RestartLevel()
 	{
-		level.Restart();
+		StartCoroutine(RestartLevelCoroutine());
+	}
+
+	private IEnumerator RestartLevelCoroutine()
+	{
+		GadgebotSurvivalLevelData levelData = level.levelData;
+		if (_spawnLoopCoroutine != null) StopCoroutine(_spawnLoopCoroutine);
+		// level.goal.onCountUpdated.RemoveListener(CheckWin);
+		// level.goal.onCountUpdated.RemoveListener((count) => CheckLose());
+		// level.spawner.onSpawn.RemoveListener(OnGadgebotSpawned);
+		// level.StopAllCoroutines();
+		gameRunning = false;
+
+		onRestartProcessStart?.Invoke();
+		AsyncOperation operacionDescarga = SceneManager.UnloadSceneAsync(levelData.values.sceneName);
+		while (!operacionDescarga.isDone)
+		{
+			yield return null;
+		}
+		
+		AsyncOperation operacionCarga = SceneManager.LoadSceneAsync(levelData.values.sceneName, LoadSceneMode.Additive);
+		float minimumLoadWait = 0.5f;
+		float t = 0;
+		bool enoughWait = false;
+		while (!operacionCarga.isDone || !enoughWait)
+		{
+			yield return new WaitUntil(() =>
+			{
+				if (t >= minimumLoadWait)
+				{
+					enoughWait = true;
+					return true;
+				}
+				t += Time.unscaledDeltaTime;
+				return false;
+			});
+			yield return null;
+		}
+		StartGame();
+		onRestartProcessEnd?.Invoke();
 	}
 
 	public void QuitGame()

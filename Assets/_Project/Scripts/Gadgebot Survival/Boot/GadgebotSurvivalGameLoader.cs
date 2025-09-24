@@ -97,7 +97,18 @@ public class GadgebotSurvivalGameLoader : ScriptableObject
 
     public void OnLevelLoaded(GadgebotSurvivalLevelManager levelManager)
     {
-        if (!onLoading) return;
+        if (!onLoading)
+        {
+            if (gameManager != null) // Restart Level
+            {
+                this.levelManager = levelManager;
+                levelManager.InitLevel(gameManager, levelData);
+                gameManager.InitGame(levelManager);
+                // gameManager.StartGame();
+            }
+
+            return;
+        }
         this.levelManager = levelManager;
         ValidateGameStartup();
     }

@@ -35,11 +35,13 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 	[SerializeField] GadgebotUnityEvent _onDestroy;
 	public GadgebotUnityEvent onDestroy { get { return _onDestroy; } set { _onDestroy = value; } }
 	public Coroutine detonateCoroutine { get; private set; }
+	private float lastGroundHeight;
 
 	void Awake()
 	{
 		lightProperty = new MaterialPropertyBlock();
 		timeAfterGrounded = properties.walkDelayAfterGround;
+		lastGroundHeight = physics.position.y;
 	}
 
 	void Start()
@@ -147,8 +149,13 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 			}
 			else timeAfterGrounded += deltaTime;
 
-			if (fallVelocity.y < -properties.fallSpeedDeathThreshold) Destroy(gameObject);
+			// if (fallVelocity.y <= -(properties.fallSpeedDeathThreshold + (10 * Time.deltaTime * (_gameServices.gameSpeed - 1))))
+			if (lastGroundHeight - physics.position.y >= properties.fallDistanceDeathThreshold)
+			{
+				Destroy(gameObject);
+			}
 			fallVelocity = Vector2.zero;
+			lastGroundHeight = physics.position.y;
 		}
 		else
 		{

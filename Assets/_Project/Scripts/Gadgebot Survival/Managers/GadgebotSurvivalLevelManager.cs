@@ -35,11 +35,6 @@ public class GadgebotSurvivalLevelManager : MonoBehaviour
         _goal.count = levelData.values.goalCount;
     }
 
-    public void Restart()
-    {
-        
-    }
-
     public void PauseSpawn()
     {
         canSpawn = false;

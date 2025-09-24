@@ -95,6 +95,7 @@ public class NavigationManager : MonoBehaviour
 
     public void ReJoinCurrentSelectable()
     {
+        if (currentSelectable == null) currentSelectable = defaultSelectable;
         EventSystem.current.SetSelectedGameObject(currentSelectable.gameObject);
     }
 

@@ -33,7 +33,8 @@ public class RadialMenu : MonoBehaviour
 
     void Update()
     {
-        bool commandMenuInputHolded = Input.GetKey(KeyCode.Tab);
+        // INPUT HARD-CODED :'(
+        bool commandMenuInputHolded = Input.GetKey(KeyCode.Tab) || Input.GetMouseButton(0);
         if (!isOpened)
         {
 
