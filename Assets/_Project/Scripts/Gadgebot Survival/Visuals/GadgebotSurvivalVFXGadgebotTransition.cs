@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class GadgebotSurvivalVFXGadgebotTransition : MonoBehaviour
 {
+    [SerializeField] GadgebotSurvivalGameServices _gameServices;
     [SerializeField] float transitionHeight = 5;
     [SerializeField] float minLightScale = 0.3f;
     [SerializeField] float maxLightScale = 0.9f;
     [SerializeField] Transform transitionLight;
-    [SerializeField] Transform transitionParticles;
+    [SerializeField] ParticleSystem transitionParticles;
+    [SerializeField] float particlesEmissionRateOverDistance = 5;
     [SerializeField] float transitionDuration = 1;
     [SerializeField] float appearScaleEndDuration = 0.2f;
     [SerializeField] float appearScaleStartDuration = 0.2f;
@@ -43,7 +45,11 @@ public class GadgebotSurvivalVFXGadgebotTransition : MonoBehaviour
         while (t < 1)
         {
             transform.position = Vector2.Lerp(startPosition, endPosition, t);
-            t += deltaDuration * Time.deltaTime;
+            t += deltaDuration * Time.deltaTime * _gameServices.gameSpeed;
+            var main = transitionParticles.main;
+            main.simulationSpeed = _gameServices.gameSpeed;
+            var emission = transitionParticles.emission;
+            emission.rateOverDistance = particlesEmissionRateOverDistance / _gameServices.gameSpeed;
             yield return null;
         }
         transform.position = endPosition;
@@ -53,7 +59,11 @@ public class GadgebotSurvivalVFXGadgebotTransition : MonoBehaviour
         while (t < 1)
         {
             transitionLight.localScale = Mathf.Lerp(minLightScale, maxLightScale, t) * Vector3.one;
-            t += deltaDuration * Time.deltaTime;
+            t += deltaDuration * Time.deltaTime * _gameServices.gameSpeed;
+            var main = transitionParticles.main;
+            main.simulationSpeed = _gameServices.gameSpeed;
+            var emission = transitionParticles.emission;
+            emission.rateOverDistance = particlesEmissionRateOverDistance / _gameServices.gameSpeed;
             yield return null;
         }
         transitionLight.localScale = maxLightScale * Vector3.one;
@@ -73,7 +83,11 @@ public class GadgebotSurvivalVFXGadgebotTransition : MonoBehaviour
         while (t < 1)
         {
             transitionLight.localScale = Mathf.Lerp(startLightScale, maxLightScale, t) * Vector3.one;
-            t += deltaDuration * Time.deltaTime;
+            t += deltaDuration * Time.deltaTime * _gameServices.gameSpeed;
+            var main = transitionParticles.main;
+            main.simulationSpeed = _gameServices.gameSpeed;
+            var emission = transitionParticles.emission;
+            emission.rateOverDistance = particlesEmissionRateOverDistance / _gameServices.gameSpeed;
             yield return null;
         }
         transitionLight.localScale = maxLightScale * Vector3.one;
@@ -84,7 +98,11 @@ public class GadgebotSurvivalVFXGadgebotTransition : MonoBehaviour
         {
             transform.position = Vector2.Lerp(startPosition, endPosition, t);
             transitionLight.localScale = Mathf.Lerp(maxLightScale, 0, t) * Vector3.one;
-            t += deltaDuration * Time.deltaTime;
+            t += deltaDuration * Time.deltaTime * _gameServices.gameSpeed;
+            var main = transitionParticles.main;
+            main.simulationSpeed = _gameServices.gameSpeed;
+            var emission = transitionParticles.emission;
+            emission.rateOverDistance = particlesEmissionRateOverDistance / _gameServices.gameSpeed;
             yield return null;
         }
         transform.position = endPosition;

@@ -302,6 +302,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb842ca5d9d33441bd7f261d2ba9f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gameServices: {fileID: 11400000, guid: d0bacef6bf04ea14786d4d92433ab0ba, type: 2}
   teletransportationDuration: 2.6
   endPointOffset: {x: 0, y: 0.7, z: 0}
   endPoint: {fileID: 9032466928427846609}

@@ -457,6 +457,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4eef1ab98b53146488ecd6f726a9d376, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gameServices: {fileID: 11400000, guid: d0bacef6bf04ea14786d4d92433ab0ba, type: 2}
   _autoPlaySpeed: 0.5
   _swingSpeed: -1
   _swingDistance: 1.5

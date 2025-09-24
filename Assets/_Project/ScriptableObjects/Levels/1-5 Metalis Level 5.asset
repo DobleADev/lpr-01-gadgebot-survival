@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
   m_Name: 1-5 Metalis Level 5
   m_EditorClassIdentifier: 
+  Id: 77d7543b-e341-45b6-8489-f05bccaab4a9
   _values:
     name: Nigh Imposible
     sceneName: gadgebot-survival-metalis-level-5

@@ -31,11 +31,21 @@ public class GadgebotSurvivalSaveDataRepository : ScriptableObject
         _currentData = loadedGameData;
     }
 
+    public bool IsGameTutorialFinished()
+    {
+        return _currentData.tutorialFinished;
+    }
+
+    public void FinishTutorial()
+    {
+        _currentData.tutorialFinished = true;
+    }
+
     public GadgebotSurvivalSaveData.LevelProgressData GetLevelProgressByLevelData(GadgebotSurvivalLevelData levelData)
     {
         // Debug.Log(_currentData == null ? "_currentData doesn't exists" : "_currentData does exists");
         // Debug.Log(_currentData.levelProgress == null ? "levelProgress doesn't exists" : "levelProgress does exists");
-        return _currentData.levelProgress.FirstOrDefault(level => level.id == levelData.GetInstanceID());
+        return _currentData.levelProgress.FirstOrDefault(level => level.id == levelData.Id);
     }
 
     public void AddWinLevelProgressByLevelData(GadgebotSurvivalLevelData levelData)
@@ -43,14 +53,14 @@ public class GadgebotSurvivalSaveDataRepository : ScriptableObject
         GadgebotSurvivalSaveData.LevelProgressData levelProgress = GetLevelProgressByLevelData(levelData);
         if (levelProgress == null)
         {
-            levelProgress = new GadgebotSurvivalSaveData.LevelProgressData(levelData.GetInstanceID());
+            levelProgress = new GadgebotSurvivalSaveData.LevelProgressData(levelData.Id);
             _currentData.levelProgress.Add(levelProgress);
         }
         levelProgress.timesCompleted++;
     } 
     // public bool TryGetLevelProgress(GadgebotSurvivalLevelData levelData, out GadgebotSurvivalSaveData.LevelProgressData levelProgress)
     // {
-    //     levelProgress = _currentData.levelProgress.FirstOrDefault(level => level.id == levelData.GetInstanceID());
+    //     levelProgress = _currentData.levelProgress.FirstOrDefault(level => level.id == levelData.Id;
     //     return _currentData.levelProgress.Contains(levelProgress);
     // } 
 
@@ -65,14 +75,15 @@ public class GadgebotSurvivalSaveData
 {
     // [SerializeField] private Level[] _levelProgress;
     // public Level[] levelProgress { get { return _levelProgress; } set { _levelProgress = value; } }
+    public bool tutorialFinished;
     public List<LevelProgressData> levelProgress = new List<LevelProgressData>();
 
     [System.Serializable]
     public class LevelProgressData
     {
-        public int id;
+        public string id;
         public int timesCompleted;
-        public LevelProgressData(int id)
+        public LevelProgressData(string id)
         {
             this.id = id;
         }

@@ -7,7 +7,7 @@ public class GadgebotSurvivalFunctionabilityTester : MonoBehaviour
     [SerializeField] GadgebotSurvivalGameManager _gameManager;
     void Start()
     {
-        _levelManager.InitLevel(_levelData);
+        _levelManager.InitLevel(_gameManager, _levelData);
         _gameManager.InitGame(_levelManager);
         _gameManager.StartGame();
     }

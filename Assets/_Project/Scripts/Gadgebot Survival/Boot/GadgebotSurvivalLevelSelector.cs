@@ -17,10 +17,10 @@ public class GadgebotSurvivalLevelSelector : MonoBehaviour
     List<GadgebotSurvivalLevelOption> _levelOptions = new List<GadgebotSurvivalLevelOption>();
     bool _levelPlaying;
 
-    void Awake()
-    {
-        FetchLevels();
-    }
+    // void Awake()
+    // {
+    //     FetchLevels();
+    // }
 
     void OnDestroy()
     {
@@ -38,6 +38,7 @@ public class GadgebotSurvivalLevelSelector : MonoBehaviour
         }
         _levelOptions.Clear();
         _levelOptionTemplate.gameObject.SetActive(true);
+
         for (int i = 0; i < _levels.Length; i++)
         {
             var levelData = _levels[i];
@@ -45,13 +46,60 @@ public class GadgebotSurvivalLevelSelector : MonoBehaviour
 
             var newLevelOption = Instantiate(_levelOptionTemplate, _levelOptionParent);
             newLevelOption.gameObject.name = levelData.values.name;
+
+            if (!_saveDataRepository.IsGameTutorialFinished() && i == 0)
+            {
+                newLevelOption.Init(
+                    levelSelector: this,
+                    levelData: levelData,
+                    levelProgress: _saveDataRepository.GetLevelProgressByLevelData(levelData),
+                    id: 0,
+                    hasTutorial: true);
+                _levelOptions.Add(newLevelOption);
+                continue;
+            }
+
+            // var newLevelOption = Instantiate(_levelOptionTemplate, _levelOptionParent);
+            // newLevelOption.gameObject.name = levelData.values.name;
             newLevelOption.Init(
-                this,
-                levelData,
-                _saveDataRepository.GetLevelProgressByLevelData(levelData),
-                i);
+                levelSelector: this,
+                levelData: levelData,
+                levelProgress: _saveDataRepository.GetLevelProgressByLevelData(levelData),
+                id: i);
             _levelOptions.Add(newLevelOption);
         }
+
+        // if (_saveDataRepository.IsGameTutorialFinished())
+        // {
+        //     for (int i = 0; i < _levels.Length; i++)
+        //     {
+        //         var levelData = _levels[i];
+        //         if (levelData.values.hided) continue;
+
+        //         var newLevelOption = Instantiate(_levelOptionTemplate, _levelOptionParent);
+        //         newLevelOption.gameObject.name = levelData.values.name;
+        //         newLevelOption.Init(
+        //             levelSelector: this,
+        //             levelData: levelData,
+        //             levelProgress: _saveDataRepository.GetLevelProgressByLevelData(levelData),
+        //             id: i);
+        //         _levelOptions.Add(newLevelOption);
+        //     }
+        // }
+        // else
+        // {
+        //     var levelData = _levels[0];
+        //     var newLevelOption = Instantiate(_levelOptionTemplate, _levelOptionParent);
+        //     newLevelOption.gameObject.name = levelData.values.name;
+        //     newLevelOption.Init(
+        //         levelSelector: this,
+        //         levelData: levelData,
+        //         levelProgress: _saveDataRepository.GetLevelProgressByLevelData(levelData),
+        //         id: 0,
+        //         hasTutorial: true);
+        //     _levelOptions.Add(newLevelOption);
+        // }
+
         _levelOptionTemplate.gameObject.SetActive(false);
 
         AutoSelectLevel();
@@ -79,12 +127,12 @@ public class GadgebotSurvivalLevelSelector : MonoBehaviour
         lastSelectedLevel = index;
         GadgebotSurvivalLevelData level = _levels[index];
         GadgebotSurvivalSaveData.LevelProgressData levelProgress = _saveDataRepository.GetLevelProgressByLevelData(level);
-        
+
         _levelMetaDataLabel.text =
         "Gadgebot Survival\n"
         // + level.values.name
         + (level.values.official ? "Official Level" : "Unofficial Level")
-        + "\nTimes Completed:  " + (levelProgress == null ? "0" : levelProgress.timesCompleted.ToString()) ;
+        + "\nTimes Completed:  " + (levelProgress == null ? "0" : levelProgress.timesCompleted.ToString());
         _levelDescriptionLabel.text = level.values.description;
     }
 
@@ -98,7 +146,7 @@ public class GadgebotSurvivalLevelSelector : MonoBehaviour
     }
 
     public void OnLevelEnd()
-    { 
+    {
         _levelPlaying = false;
         _levelSelectorPanel.SetActive(true);
         FetchLevels();

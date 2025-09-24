@@ -15,7 +15,7 @@ MonoBehaviour:
   speed: 1
   gravityScale: 1
   maxFallSpeed: 12
-  fallSpeedDeathThreshold: 9
+  fallSpeedDeathThreshold: 10
   walkDelayAfterGround: 0.3
   groundCheckOrigin: {x: 0, y: -0.5}
   groundCheckSize: {x: 0.7, y: 0.1}

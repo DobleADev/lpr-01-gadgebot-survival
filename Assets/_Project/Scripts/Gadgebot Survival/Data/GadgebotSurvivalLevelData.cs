@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewGadgebotSurvivalLevel", menuName = "Scriptable Object/Gadgebot Survival Level")]
-public class GadgebotSurvivalLevelData : ScriptableObject
+public class GadgebotSurvivalLevelData : BaseScriptableData
 {
     [System.Serializable]
     public struct LevelDataValues

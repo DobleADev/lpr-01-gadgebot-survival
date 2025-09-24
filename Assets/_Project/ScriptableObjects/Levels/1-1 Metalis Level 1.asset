@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
   m_Name: 1-1 Metalis Level 1
   m_EditorClassIdentifier: 
+  Id: e87cd784-e578-4c24-9548-1e890ca51ba9
   _values:
     name: Take two for the team
     sceneName: gadgebot-survival-metalis-level-1

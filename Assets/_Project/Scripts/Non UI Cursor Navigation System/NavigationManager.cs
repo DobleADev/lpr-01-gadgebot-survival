@@ -93,6 +93,11 @@ public class NavigationManager : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(selectable.gameObject);
     }
 
+    public void ReJoinCurrentSelectable()
+    {
+        EventSystem.current.SetSelectedGameObject(currentSelectable.gameObject);
+    }
+
     void OnCommandMenuOpen()
     {
         reticle.timeScale = 0;

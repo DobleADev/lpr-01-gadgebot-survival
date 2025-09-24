@@ -5,7 +5,6 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 {
 	[SerializeField] GadgebotSurvivalGameLoader _loader;
 	[SerializeField] NavigationManager _navManager;
-	[SerializeField] bool _lockCursorOnPlay = true;
 	public GadgebotSurvivalLevelManager level { get; private set; }
 	public bool gameRunning { get; private set; }
 	public UnityEvent onStart;
@@ -29,8 +28,8 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 				level.goal.onCountUpdated.RemoveListener((count) => CheckLose());
 				level.spawner.onSpawn.RemoveListener(OnGadgebotSpawned);
 			}
-        }
-		
+		}
+
 	}
 
 	void OnGadgebotSpawned(GadgebotSurvivalGadgebotController gadgebot)
@@ -63,13 +62,7 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 	public void InitGame(GadgebotSurvivalLevelManager levelManager)
 	{
 		level = levelManager;
-		if (_lockCursorOnPlay)
-		{
-			Cursor.visible = false;
-        	Cursor.lockState = CursorLockMode.Locked;
-		}
-		
-    }
+	}
 
 	public void StartGame()
 	{
@@ -82,10 +75,15 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 		StartCoroutine(level.SpawnLoop());
 	}
 
+	public void RestartLevel()
+	{
+		level.Restart();
+	}
+
 	public void QuitGame()
 	{
 		Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
+		Cursor.lockState = CursorLockMode.None;
 		onQuit?.Invoke();
 		_loader.UnloadGame();
 	}

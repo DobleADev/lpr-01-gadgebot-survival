@@ -321,6 +321,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7b2350d08ddc2b45b387d13c475ae2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gameServices: {fileID: 11400000, guid: d0bacef6bf04ea14786d4d92433ab0ba, type: 2}
   prefab: {fileID: 114068487762626738, guid: 6d8098e151502e941983b44aa77f70f9, type: 3}
   spawnOrigin: {x: 0, y: 0.7, z: 0}
   spawnDelay: 0.7

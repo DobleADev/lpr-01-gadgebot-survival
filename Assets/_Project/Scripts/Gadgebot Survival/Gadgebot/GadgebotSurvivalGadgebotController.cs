@@ -7,6 +7,7 @@ using UnityEngine;
 // {
 public class GadgebotSurvivalGadgebotController : MonoBehaviour
 {
+	[SerializeField] GadgebotSurvivalGameServices _gameServices;
 	[SerializeField] GadgebotSurvivalGadgebotData _properties;
 	public GadgebotSurvivalGadgebotData properties { get { return _properties; } }
 	[SerializeField] Rigidbody2D physics;
@@ -15,6 +16,8 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 	float timeAfterGrounded;
 	GadgebotState currentCommand;
 	MaterialPropertyBlock lightProperty;
+	public event Action<GadgebotState> onCommandChanged;
+	public event Action onDeath;
 	public Vector2 fallVelocity { get; private set; }
 	public bool isGrounded { get; private set; }
 	public Collider2D ground { get; private set; }
@@ -95,6 +98,7 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 
 	void OnDestroy()
 	{
+		onDeath?.Invoke();
 		onDestroy?.Invoke(this);
 	}
 
@@ -107,6 +111,7 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 
 	void HandleMovement()
 	{
+		float deltaTime = Time.deltaTime * _gameServices.gameSpeed;
 		if (!physicsEnabled)
 		{
 			// fallVelocity = Vector2.zero;
@@ -140,7 +145,7 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 			{
 				if (walk) movement = direction * Vector2.right * properties.speed;
 			}
-			else timeAfterGrounded += Time.deltaTime;
+			else timeAfterGrounded += deltaTime;
 
 			if (fallVelocity.y < -properties.fallSpeedDeathThreshold) Destroy(gameObject);
 			fallVelocity = Vector2.zero;
@@ -149,12 +154,12 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 		{
 			timeAfterGrounded = 0;
 			movement = fallVelocity;
-			fallVelocity += Time.deltaTime * Physics2D.gravity * properties.gravityScale;
+			fallVelocity += deltaTime * Physics2D.gravity * properties.gravityScale;
 			fallVelocity = Vector2.ClampMagnitude(fallVelocity, properties.maxFallSpeed);
 		}
 
-		// physics.Slide(Time.deltaTime * movement, 0.08f, 2);
-		physics.Walk(Time.deltaTime * movement, 45, 0.08f, 2, 1);
+		// physics.Slide(deltaTime * movement, 0.08f, 2);
+		physics.Walk(deltaTime * movement, 45, 0.08f, 2, 1);
 	}
 
 	void ChangeLightColor(Color color)
@@ -175,6 +180,7 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 			currentCommand.OnCommandExit(this);
 		}
 		(currentCommand = commandState).OnCommandEnter(this);
+		onCommandChanged?.Invoke(currentCommand);
 		ChangeLightColor(currentCommand.lightColor);
 	}
 
@@ -194,7 +200,7 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 			float jump = Mathf.Lerp(0, bridgeCommand.jumpMaxApex, Mathf.Sin(t * Mathf.PI));
 			Vector3 traslation = Vector3.Lerp(initialPosition, endPosition, t);
 			gadgebotTransform.position = traslation + jump * Vector3.up;
-			t += deltaDuration * Time.deltaTime;
+			t += deltaDuration * Time.deltaTime * _gameServices.gameSpeed;
 			yield return null;
 		}
 		gadgebotTransform.position = endPosition;
@@ -345,7 +351,17 @@ public class GadgebotSurvivalGadgebotController : MonoBehaviour
 
 	IEnumerator ExplosionProcess(GadgebotDetonateCommand detonateCommand)
 	{
-		yield return new WaitForSeconds(detonateCommand.detonationBuildUpSeconds);
+		float t = 0;
+		yield return new WaitUntil(() =>
+			{
+				if (t >= detonateCommand.detonationBuildUpSeconds)
+				{
+					t = 0;
+					return true;
+				}
+				t += Time.deltaTime * _gameServices.gameSpeed;
+				return false;
+			});
 		Detonate();
 	}
 

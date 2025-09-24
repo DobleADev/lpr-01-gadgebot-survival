@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
   m_Name: 1-4 Metalis Level 4
   m_EditorClassIdentifier: 
+  Id: f1ebc5bb-7f5d-4559-a744-16b79cd2fc5f
   _values:
     name: Brain trip
     sceneName: gadgebot-survival-metalis-level-4

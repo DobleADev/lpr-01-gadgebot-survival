@@ -586,6 +586,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3da7f035fe5fdf04d92345831961be31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gameServices: {fileID: 11400000, guid: d0bacef6bf04ea14786d4d92433ab0ba, type: 2}
   _loader: {fileID: 11400000, guid: 92b0636d98ba5a1499a014a88b57295e, type: 2}
   _spawner: {fileID: 1728915024}
   _goal: {fileID: 793661709}

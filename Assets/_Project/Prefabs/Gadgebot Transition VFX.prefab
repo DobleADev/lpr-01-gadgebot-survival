@@ -40,7 +40,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3877546056581160986}
   serializedVersion: 6
-  lengthInSec: 0.3
+  lengthInSec: 0.25
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -115,7 +115,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.3
+      scalar: 0.25
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -600,7 +600,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 16
+    maxNumParticles: 20
     size3D: 0
     rotation3D: 0
     gravityModifier:
@@ -4877,11 +4877,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2aef82a0c9cd2aa498172018c45da7b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gameServices: {fileID: 11400000, guid: d0bacef6bf04ea14786d4d92433ab0ba, type: 2}
   transitionHeight: 5
   minLightScale: 0.2
   maxLightScale: 0.5
   transitionLight: {fileID: 3877546057547974360}
-  transitionParticles: {fileID: 3877546056581160987}
+  transitionParticles: {fileID: 3877546056581160989}
+  particlesEmissionRateOverDistance: 5
   transitionDuration: 0.5
   appearScaleEndDuration: 0.2
   appearScaleStartDuration: 0.2

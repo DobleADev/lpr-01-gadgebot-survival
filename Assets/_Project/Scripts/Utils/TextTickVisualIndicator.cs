@@ -7,11 +7,16 @@ public class TextTickVisualIndicator : MonoBehaviour
     [SerializeField] private TMP_Text _label;
     [SerializeField] float _tickSpeed = 1;
     [SerializeField] float _tickExposure = 1;
+    Coroutine _labelCoroutine;
 
     private void OnEnable()
     {
-        StopAllCoroutines();
-        StartCoroutine(LabelCoroutine());
+        _labelCoroutine = StartCoroutine(LabelCoroutine());
+    }
+
+    private void OnDisable()
+    {
+        if (_labelCoroutine != null) StopCoroutine(_labelCoroutine);
     }
     
     IEnumerator LabelCoroutine()

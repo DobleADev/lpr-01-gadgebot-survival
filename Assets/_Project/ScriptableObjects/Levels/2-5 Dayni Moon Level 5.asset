@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
   m_Name: 2-5 Dayni Moon Level 5
   m_EditorClassIdentifier: 
+  Id: d6b3bfa1-a073-455b-96ab-34d6383498ac
   _values:
     name: Infinite Improbabilty
     sceneName: gadgebot-survival-dayni-moon-level-9

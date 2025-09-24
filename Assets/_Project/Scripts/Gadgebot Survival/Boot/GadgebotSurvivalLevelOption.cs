@@ -9,11 +9,12 @@ public class GadgebotSurvivalLevelOption : MonoBehaviour
     [SerializeField] TMP_Text _levelNameLabel;
     [SerializeField] Image _levelCompletedIndicator;
     [SerializeField] Image _levelOptionTag;
+    [SerializeField] GameObject _tutorialTag;
     [SerializeField] Color _levelOptionTagDefaultColor = Color.cyan;
     [SerializeField] Color _levelOptionTagUnofficialColor = Color.red;
     int _id;
     GadgebotSurvivalLevelSelector _levelSelector;
-    public void Init(GadgebotSurvivalLevelSelector levelSelector, GadgebotSurvivalLevelData levelData, GadgebotSurvivalSaveData.LevelProgressData levelProgress, int id)
+    public void Init(GadgebotSurvivalLevelSelector levelSelector, GadgebotSurvivalLevelData levelData, GadgebotSurvivalSaveData.LevelProgressData levelProgress, int id, bool hasTutorial = false)
     {
         _levelNameLabel.text = levelData.values.name;
         _levelCompletedIndicator.enabled = levelProgress == null ? false : levelProgress.timesCompleted > 0;
@@ -27,6 +28,7 @@ public class GadgebotSurvivalLevelOption : MonoBehaviour
             _levelNameLabel.color = new Color(1, 1, 1, 0.5f);
         }
         _levelOptionTag.color = levelOptionTagColor;
+        _tutorialTag.SetActive(hasTutorial);
     }
 
     // public void FocusSelection()

@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 876688504861672941}
   m_Layer: 8
   m_Name: Gadgebot
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -128,6 +128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2321fcdd55f8234b9c860ccc977bdb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gameServices: {fileID: 11400000, guid: d0bacef6bf04ea14786d4d92433ab0ba, type: 2}
   _properties: {fileID: 11400000, guid: e049d59214c08e446a9ad345c38896dd, type: 2}
   physics: {fileID: 50091841157774126}
   lightRenderer: {fileID: 5170623973620278568}

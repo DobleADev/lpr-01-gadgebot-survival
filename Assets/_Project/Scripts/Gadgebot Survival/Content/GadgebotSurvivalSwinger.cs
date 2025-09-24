@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class GadgebotSurvivalSwinger : MonoBehaviour
 {
+    [SerializeField] GadgebotSurvivalGameServices _gameServices;
     [Header("Swinger Properties")]
     [SerializeField] float _autoPlaySpeed = 1;
     [SerializeField] float _swingSpeed = 1;
@@ -65,7 +66,8 @@ public class GadgebotSurvivalSwinger : MonoBehaviour
         float timeElapsed = 0;
         while (true)
         {
-            timeElapsed += _autoPlaySpeed * Time.deltaTime;
+            float deltaTime = Time.deltaTime * _gameServices.gameSpeed;
+            timeElapsed += _autoPlaySpeed * deltaTime;
             if (timeElapsed >= 1) timeElapsed -= 1;
             float lapCohefficent = 2 * _swingSpeed * Mathf.PI;
 
@@ -75,7 +77,7 @@ public class GadgebotSurvivalSwinger : MonoBehaviour
             _swingerJointCenter.rotation = Quaternion.AngleAxis(jointProgress * -Mathf.Rad2Deg, Vector3.back);
             _swingerJointEnd.position = _swingerJointCenter.position + endPosition;
 
-            float swingEdgeBound = _swingEdgeThreshold - Time.deltaTime;
+            float swingEdgeBound = _swingEdgeThreshold - deltaTime;
 
             if (_isSwingingLeft)
             {
@@ -167,7 +169,7 @@ public class GadgebotSurvivalSwinger : MonoBehaviour
                     }
                 }
 
-                _gadgebotProgress += Time.deltaTime;
+                _gadgebotProgress += deltaTime;
             }
             yield return null;
         }

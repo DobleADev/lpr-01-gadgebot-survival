@@ -4,6 +4,7 @@ using UnityEngine.Events;
 
 public class GadgebotSurvivalTeletransporter : MonoBehaviour
 {
+    [SerializeField] GadgebotSurvivalGameServices _gameServices;
     public float teletransportationDuration = 2;
     public Vector3 endPointOffset;
     public Transform endPoint;
@@ -30,16 +31,46 @@ public class GadgebotSurvivalTeletransporter : MonoBehaviour
         onTeletransportation = true;
         canBeWaitedFor = false;
         // Debug.Log("TP WAIT");
-        yield return new WaitForSeconds(teletransportationDuration);
+        float t = 0;
+		yield return new WaitUntil(() =>
+			{
+				if (t >= teletransportationDuration)
+				{
+					t = 0;
+					return true;
+				}
+				t += Time.deltaTime * _gameServices.gameSpeed;
+				return false;
+			});
         // Debug.Log("TP START");
 
         _gadgebotTeletransporting.gameObject.SetActive(false);
         onTeleportStart?.Invoke();
-		yield return new WaitForSeconds(teleportTransitionDuration * 0.5f);
+        t = 0;
+		yield return new WaitUntil(() =>
+			{
+				if (t >= teleportTransitionDuration * 0.5f)
+				{
+					t = 0;
+					return true;
+				}
+				t += Time.deltaTime * _gameServices.gameSpeed;
+				return false;
+			});
 
         onTeleportEnd?.Invoke();
         canBeWaitedFor = true;
-		yield return new WaitForSeconds(teleportTransitionDuration * 0.5f);
+        t = 0;
+		yield return new WaitUntil(() =>
+			{
+				if (t >= teleportTransitionDuration * 0.5f)
+				{
+					t = 0;
+					return true;
+				}
+				t += Time.deltaTime * _gameServices.gameSpeed;
+				return false;
+			});
         // Debug.Log("TP END");
 
         _gadgebotTeletransporting.gameObject.SetActive(true);

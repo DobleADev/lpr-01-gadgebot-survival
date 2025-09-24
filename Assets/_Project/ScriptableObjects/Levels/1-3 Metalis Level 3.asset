@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
   m_Name: 1-3 Metalis Level 3
   m_EditorClassIdentifier: 
+  Id: aef25855-5c88-4b5a-beb4-fcaa8bc26191
   _values:
     name: Of Trapeze and Teleporters
     sceneName: gadgebot-survival-metalis-level-3

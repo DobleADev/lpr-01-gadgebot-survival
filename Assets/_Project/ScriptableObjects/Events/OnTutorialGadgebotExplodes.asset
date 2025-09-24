@@ -9,10 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4203607c6b7e67845bbcbed7fbee337f, type: 3}
-  m_Name: Gadgebot Survival Data Repository
+  m_Script: {fileID: 11500000, guid: 94f47df37907d974983255af24a6b73a, type: 3}
+  m_Name: OnTutorialGadgebotExplodes
   m_EditorClassIdentifier: 
-  _windowsSaveDataPath: /savedata.bin
-  _webSaveDataKey: dobleadev_gadgebot_survival_savedata
-  _currentData:
-    levelProgress: []

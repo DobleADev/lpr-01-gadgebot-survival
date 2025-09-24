@@ -35,7 +35,7 @@ public class GadgebotSurvivalGameLoader : ScriptableObject
         {
             return;
         }
-        levelManager.InitLevel(levelData);
+        levelManager.InitLevel(gameManager, levelData);
         gameManager.InitGame(levelManager);
         gameManager.StartGame();
         onLoading = false;

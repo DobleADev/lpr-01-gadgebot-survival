@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
   m_Name: 1-2 Metalis Level 2
   m_EditorClassIdentifier: 
+  Id: a05cbfb8-0cc8-49be-b7a2-0506b7c559f9
   _values:
     name: Bridge The Gap
     sceneName: gadgebot-survival-metalis-level-2

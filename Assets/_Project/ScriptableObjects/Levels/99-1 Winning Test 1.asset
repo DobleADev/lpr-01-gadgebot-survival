@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
   m_Name: 99-1 Winning Test 1
   m_EditorClassIdentifier: 
+  Id: 62e10ed6-2756-4192-b0e1-062dec90e0e8
   _values:
     name: Winning Test
     sceneName: gadgebot-survival-winning-test-level
     description: You must win :')
+    locked: 0
+    hided: 0
+    official: 0
     spawnCount: 1
     goalCount: 1
     spawnInterval: 3.7
-    locked: 0
-    hided: 0
-    secret: 1
+    thumbnail: {fileID: 0}
+    ost: {fileID: 0}

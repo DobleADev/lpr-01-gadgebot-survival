@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64ca3861263a43b418130e69756142f2, type: 3}
   m_Name: 99-5 Swing Test 1
   m_EditorClassIdentifier: 
+  Id: 434abef6-4777-45ad-b9d8-edf2104c2b13
   _values:
     name: Infinite Improbabilty Swing Test
     sceneName: gadgebot-survival-dayni-moon-level-9-swing-test
