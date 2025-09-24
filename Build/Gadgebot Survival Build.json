@@ -1,7 +1,7 @@
 {
 "companyName": "DobleADev",
 "productName": "Gadgebot Survival",
-"productVersion": "1.1.1",
+"productVersion": "1.3.0",
 "dataUrl": "Gadgebot Survival Build.data.unityweb",
 "wasmCodeUrl": "Gadgebot Survival Build.wasm.code.unityweb",
 "wasmFrameworkUrl": "Gadgebot Survival Build.wasm.framework.unityweb",
