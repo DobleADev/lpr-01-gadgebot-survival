@@ -129,6 +129,7 @@ public class GadgebotSurvivalGameManager : MonoBehaviour
 
 	public void QuitGame()
 	{
+		gameRunning = false;
 		Cursor.visible = true;
 		Cursor.lockState = CursorLockMode.None;
 		onQuit?.Invoke();

@@ -30,12 +30,18 @@ public class PreventDeselectionGroup : MonoBehaviour
 
     public void SetNewSelected(Selectable selectable)
     {
-        if (selectable == null) return;
+        if (selectable == null || sel == selectable) return;
         selectable.Select();
         sel = selectable.gameObject;
         // evt.SetSelectedGameObject(selectable.gameObject);
         // Debug.Log(selectable.gameObject.name + " is the new selected");
         // evt.SetSelectedGameObject(null);
         // HandleDeselectionCheck();
+    }
+
+    public void ResetSelectable()
+    {
+        evt.SetSelectedGameObject(null);
+        sel = null;
     }
 }

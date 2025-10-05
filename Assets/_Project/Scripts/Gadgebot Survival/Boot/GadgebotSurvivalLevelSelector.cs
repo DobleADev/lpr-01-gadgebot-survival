@@ -30,6 +30,7 @@ public class GadgebotSurvivalLevelSelector : MonoBehaviour
         }
     }
 
+    [ContextMenu("Fetch Levels")]
     public void FetchLevels()
     {
         for (int i = _levelOptions.Count - 1; i >= 0; i--)
@@ -68,57 +69,21 @@ public class GadgebotSurvivalLevelSelector : MonoBehaviour
                 id: i);
             _levelOptions.Add(newLevelOption);
         }
-
-        // if (_saveDataRepository.IsGameTutorialFinished())
-        // {
-        //     for (int i = 0; i < _levels.Length; i++)
-        //     {
-        //         var levelData = _levels[i];
-        //         if (levelData.values.hided) continue;
-
-        //         var newLevelOption = Instantiate(_levelOptionTemplate, _levelOptionParent);
-        //         newLevelOption.gameObject.name = levelData.values.name;
-        //         newLevelOption.Init(
-        //             levelSelector: this,
-        //             levelData: levelData,
-        //             levelProgress: _saveDataRepository.GetLevelProgressByLevelData(levelData),
-        //             id: i);
-        //         _levelOptions.Add(newLevelOption);
-        //     }
-        // }
-        // else
-        // {
-        //     var levelData = _levels[0];
-        //     var newLevelOption = Instantiate(_levelOptionTemplate, _levelOptionParent);
-        //     newLevelOption.gameObject.name = levelData.values.name;
-        //     newLevelOption.Init(
-        //         levelSelector: this,
-        //         levelData: levelData,
-        //         levelProgress: _saveDataRepository.GetLevelProgressByLevelData(levelData),
-        //         id: 0,
-        //         hasTutorial: true);
-        //     _levelOptions.Add(newLevelOption);
-        // }
-
         _levelOptionTemplate.gameObject.SetActive(false);
-
         AutoSelectLevel();
     }
 
+    [ContextMenu("Auto Select Level")]
     public void AutoSelectLevel()
     {
+        Canvas.ForceUpdateCanvases();
         if (_levelOptions.Count > 0)
         {
-            if (lastSelectedLevel == -1)
-            {
-                // _levelOptions[0].button.Select();
-                _preventDeselection.SetNewSelected(_levelOptions[0].button);
-            }
-            else
-            {
-                // _levelOptions[lastPlayedLevel].button.Select();
-                _preventDeselection.SetNewSelected(_levelOptions[lastSelectedLevel].button);
-            }
+            var levelToSelect = lastSelectedLevel == -1
+            ? _levelOptions[0].button
+            : _levelOptions[lastSelectedLevel].button;
+            // Debug.Log(levelToSelect.gameObject.name);
+            _preventDeselection.SetNewSelected(levelToSelect);
         }
     }
 
