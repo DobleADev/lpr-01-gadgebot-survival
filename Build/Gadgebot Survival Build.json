@@ -1,7 +1,7 @@
 {
 "companyName": "DobleADev",
 "productName": "Gadgebot Survival",
-"productVersion": "1.3.0",
+"productVersion": "1.3.3",
 "dataUrl": "Gadgebot Survival Build.data.unityweb",
 "wasmCodeUrl": "Gadgebot Survival Build.wasm.code.unityweb",
 "wasmFrameworkUrl": "Gadgebot Survival Build.wasm.framework.unityweb",
@@ -11,5 +11,5 @@
 "backgroundColor": "#231F20",
 "developmentBuild": false,
 "multithreading": false,
-"unityVersion": "2019.4.40f1"
+"unityVersion": "2019.4.41f1"
 }
